@@ -9,13 +9,14 @@ window.onload = function execute(){
         'highlightTerms': true,
         'imageZoom': true,
         'minimumLength': 3,
+        'mode': 'json',
         'newWindow': false,
-        'show': 10,
+        'show': 1000,
         'showContext': true,
         'showRelated': true,
         'showTime': true,
         'showTitleCount': true,
-        'showURL': true,
+        'showURL': false,
         'wholeWords': true
     };
     var tipuesearch_t_c = 0;
