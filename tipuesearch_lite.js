@@ -106,43 +106,9 @@ window.onload = function execute(){
                 for (var i = 0; i < tipuesearch.pages.length; i++) {
                     var score = 0;
                     var s_t = tipuesearch.pages[i].text;
-                    for (var f = 0; f < d_w.length; f++) {
-                        if (set.wholeWords) {
-                            var pat = new RegExp('\\b' + d_w[f] + '\\b', 'gi');
-                        } else {
-                            var pat = new RegExp(d_w[f], 'gi');
-                        }
-                        if (tipuesearch.pages[i].title.search(pat) != -1) {
-                            var m_c = tipuesearch.pages[i].title.match(pat).length;
-                            score += (20 * m_c);
-                        }
-                        if (tipuesearch.pages[i].text.search(pat) != -1) {
-                            var m_c = tipuesearch.pages[i].text.match(pat).length;
-                            score += (20 * m_c);
-                        }
-                        if (tipuesearch.pages[i].tags) {
-                            if (tipuesearch.pages[i].tags.search(pat) != -1) {
-                                var m_c = tipuesearch.pages[i].tags.match(pat).length;
-                                score += (10 * m_c);
-                            }
-                        }
-                        if (tipuesearch.pages[i].url.search(pat) != -1) {
-                            score += 20;
-                        }
-                        if (score != 0) {
-                            for (var e = 0; e < tipuesearch_weight.weight.length; e++) {
-                                if (tipuesearch.pages[i].url == tipuesearch_weight.weight[e].url) {
-                                    score += tipuesearch_weight.weight[e].score;
-                                }
-                            }
-                        }
-                        if (d_w[f].match('^-')) {
-                            pat = new RegExp(d_w[f].substring(1), 'i');
-                            if (tipuesearch.pages[i].title.search(pat) != -1 || tipuesearch.pages[i].text.search(pat) != -1 || tipuesearch.pages[i].tags.search(pat) != -1) {
-                                score = 0;
-                            }
-                        }
-                    }
+
+                    score = tipue_KMP_multiple(d_w, s_t, set, i);
+
                     if (score != 0) {
                         found.push({
                             "score": score,
@@ -159,31 +125,9 @@ window.onload = function execute(){
                 for (var i = 0; i < tipuesearch.pages.length; i++) {
                     var score = 0;
                     var s_t = tipuesearch.pages[i].text;
-                    var pat = new RegExp(d, 'gi');
-                    if (tipuesearch.pages[i].title.search(pat) != -1) {
-                        var m_c = tipuesearch.pages[i].title.match(pat).length;
-                        score += (20 * m_c);
-                    }
-                    if (tipuesearch.pages[i].text.search(pat) != -1) {
-                        var m_c = tipuesearch.pages[i].text.match(pat).length;
-                        score += (20 * m_c);
-                    }
-                    if (tipuesearch.pages[i].tags) {
-                        if (tipuesearch.pages[i].tags.search(pat) != -1) {
-                            var m_c = tipuesearch.pages[i].tags.match(pat).length;
-                            score += (10 * m_c);
-                        }
-                    }
-                    if (tipuesearch.pages[i].url.search(pat) != -1) {
-                        score += 20;
-                    }
-                    if (score != 0) {
-                        for (var e = 0; e < tipuesearch_weight.weight.length; e++) {
-                            if (tipuesearch.pages[i].url == tipuesearch_weight.weight[e].url) {
-                                score += tipuesearch_weight.weight[e].score;
-                            }
-                        }
-                    }
+
+                    score = tipue_KMP_single(d, s_t, set, i);
+
                     if (score != 0) {
                         found.push({
                             "score": score,
