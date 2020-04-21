@@ -159,7 +159,6 @@ window.onload = function execute(){
                     var endTimer = new Date().getTime();
                     var time = (endTimer - startTimer) / 1000;
                     out += " (" + time.toFixed(2) + " " + tipuesearch_string_14 + ")";
-                    set.showTime = false;
                 }
                 out += "</div>";
                 if (set.showRelated && standard) {
