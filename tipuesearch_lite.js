@@ -374,21 +374,150 @@ window.onload = function execute(){
                 if (set.minimumLength == 1) {
                     out += '<div id="tipue_search_error">' + tipuesearch_string_11 + '</div>';
                 } else {
-                    if (show_stop) {
-                        out += '<div id="tipue_search_error">' + tipuesearch_string_8 + ' ' + tipuesearch_string_9 + '</div>';
-                    } else {
-                        if (set.minimumLength == 1) {
-                            out += '<div id="tipue_search_error">' + tipuesearch_string_11 + '</div>';
-                        } else {
-                            out += '<div id="tipue_search_error">' + tipuesearch_string_12 + ' ' + set.minimumLength + ' ' + tipuesearch_string_13 + '</div>';
-                        }
+                    out += '<div id="tipue_search_error">' + tipuesearch_string_12 + ' ' + set.minimumLength + ' ' + tipuesearch_string_13 + '</div>';
+                }
+            }
+        }
+        document.getElementById('tipue_search_content').innerHTML = out;
+        if(show_replace){
+            document.getElementById('tipue_search_replaced').onclick = function() {
+                getTipueSearch(0, false);
+            };
+        }
+        document.getElementsByClassName('tipue_search_related_btn').onclick = function() {
+            document.getElementById('tipue_search_input').value = this.id;
+            getTipueSearch(0, true);
+        };
+        document.getElementsByClassName('tipue_search_image_zoom').onclick = function() {
+            document.getElementById('tipue_search_zoom_img').src = this.src;
+            var z_u = this.data-url;
+            document.getElementById('tipue_search_zoom_url').href = z_u;
+            var z_o = this.alt + '<div class="tipue_search_zoom_options"><a href="' + this.src + '" target="_blank">' + tipuesearch_string_15 + '</a>&nbsp; <a href="' + z_u + '">' + tipuesearch_string_16 + '</a></div>';
+            document.getElementById('tipue_search_zoom_text').innerHTML = z_o;
+        };´
+        document.getElementsByClassName('tipue_search_image_close').onclick = function() {
+        };
+        document.getElementsByClassName('tipue_search_foot_box').onclick = function() {
+            var id_v = this.id;
+            var id_a = id_v.split('_');
+            getTipueSearch(parseInt(id_a[0]), id_a[1]);
+        };
+    }
+
+    // -------------------- SEARCH ALGORITHM ------------------------
+    function KMP_prefix(pattern, pattern_len){
+        // length of found prefix
+        var prefix_len = -1;
+
+        // Start value is always -1
+        var prefix_table = [];
+        prefix_table.push(prefix_len);
+
+        for (var position_in_pattern = 0; position_in_pattern < pattern_len; position_in_pattern++){
+        // if prefix is too long, shorten it
+        while (prefix_len >= 0 && pattern[prefix_len] !== pattern[position_in_pattern]){
+            prefix_len = prefix_table[prefix_len];
+        }
+
+        // at this point prefix_len == -1 or pattern[position_in_pattern] == pattern[prefix_len]
+        prefix_len = prefix_len + 1;
+        prefix_table.push(prefix_len);
+        }
+        return prefix_table;
+    }
+
+
+    function KMP_search(pattern, prefix_table, text){
+        var position_in_pattern = 0;
+        var cnt = 0;
+        var pattern_len = pattern.length;
+
+        for (var position_in_text = 0; position_in_text < text.length; position_in_text++){
+            // move pattern until text and pattern match
+            while (position_in_pattern >= 0 && text[position_in_text] !== pattern[position_in_pattern]){
+                // use prefix-table
+                position_in_pattern = prefix_table[position_in_pattern];
+            }
+
+            position_in_pattern = position_in_pattern + 1
+
+            // in case end of pattern is reached
+            if (position_in_pattern === pattern_len){
+                // register match
+                //console.log("Match at position "+ (position_in_text - pattern_len).toString() +".");
+                cnt++;
+                // move pattern
+                position_in_pattern = prefix_table[position_in_pattern];
+            }
+        }
+        return cnt;
+    }
+
+    function tipue_KMP_multiple(d_w, s_text, set, i){
+        var score = 0;
+        for(var f=0;f<d_w.length;f++){
+            var pre_tab = KMP_prefix(d_w[f], d_w[f].length);
+            var match_cnt = KMP_search(d_w[f], pre_tab, tipuesearch.pages[i].title);
+            if(match_cnt != 0){
+                score+=(20*match_cnt);
+            }
+            match_cnt = KMP_search(d_w[f], pre_tab, s_text);
+            if(match_cnt != 0){
+                score+=(20*match_cnt);
+            }
+
+            if(tipuesearch.pages[i].tags){
+                match_cnt = KMP_search(d_w[f], pre_tab, tipuesearch.pages[i].tags);
+                if(match_cnt != 0){
+                    score+=(10*match_cnt);
+                }
+            }
+            match_cnt = KMP_search(d_w[f], pre_tab, tipuesearch.pages[i].url);
+            if(match_cnt != 0){
+                score+=20;
+            }
+            if(score!=0){
+                for(var e=0;e<tipuesearch_weight.weight.length;e++){
+                    if(tipuesearch.pages[i].url==tipuesearch_weight.weight[e].url){
+                        score+=tipuesearch_weight.weight[e].score;
                     }
                 }
-                document.getElementById('tipue_search_content').innerHTML = out;
-                if(show_replace){
-                    document.getElementById('tipue_search_replaced').onclick = function() {
-                        getTipueSearch(0, false);
-                    };
+            }
+            if(d_w[f].match('^-')){
+                pat=new RegExp(d_w[f].substring(1),'i');
+                if(KMP_search(d_w[f], pre_tab, tipuesearch.pages[i].title)!=0||KMP_search(d_w[f], pre_tab, s_text)!=0||KMP_search(d_w[f], pre_tab, tipuesearch.pages[i].tags)!=0){
+                    score=0;
+                }
+            }
+        }
+        return score;
+    }
+
+    function tipue_KMP_single(pat, s_text, set, i){
+        var pre_tab = KMP_prefix(pat, pat.length);
+
+        var match_cnt = KMP_search(pat, pre_tab, tipuesearch.pages[i].title);
+        if(match_cnt!=0){
+            score+=(20*match_cnt);
+        }
+        match_cnt = KMP_search(pat, pre_tab, s_text);
+        if(match_cnt!=0){
+            score+=(20*match_cnt);
+        }
+
+        if(tipuesearch.pages[i].tags){
+            match_cnt = KMP_search(pat, pre_tab, tipuesearch.pages[i].tags);
+            if(match_cnt!=0){
+                score+=(10*match_cnt);
+            }
+        }
+        if(KMP_search(pat, pre_tab, tipuesearch.pages[i].tags)!=0){
+            score+=20;
+        }
+        if(score!=0){
+            for(var e=0;e<tipuesearch_weight.weight.length;e++){
+                if(tipuesearch.pages[i].url==tipuesearch_weight.weight[e].url){
+                    score+=tipuesearch_weight.weight[e].score;
                 }
             }
         }
