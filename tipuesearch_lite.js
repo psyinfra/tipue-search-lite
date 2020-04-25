@@ -12,7 +12,6 @@ window.onload = function execute(){
         "newWindow": false,
         "show": 1000,
         "showContext": true,
-        "showRelated": true,
         "showTime": true,
         "showTitleCount": true,
         "showURL": false,
@@ -158,32 +157,6 @@ window.onload = function execute(){
                     out += " (" + time.toFixed(2) + " " + tipuesearch_string_14 + ")";
                 }
                 out += "</div>";
-                if (set.showRelated && standard) {
-                    var ront = "";
-                    f = 0;
-                    for (var i = 0; i < tipuesearch_related.Related.length; i++) {
-                        if (d == tipuesearch_related.Related[i].search) {
-                            if (!f) {
-                                out += "<div class='tipue_search_related'>" + tipuesearch_string_10 + ": ";
-                            }
-                            if (show_replace) {
-                                d_o = d;
-                            }
-                            if (tipuesearch_related.Related[i].include) {
-                                var r_d = d_o + " " + tipuesearch_related.Related[i].related;
-                            } else {
-                                var r_d = tipuesearch_related.Related[i].related;
-                            }
-                            ront += "<a class='tipue_search_related_btn' id='" + r_d + "'>" + tipuesearch_related.Related[i].related + "</a>, ";
-                            f++;
-                        }
-                    }
-                    if (f) {
-                        ront = ront.slice(0, -2);
-                        ront += ".</div>";
-                        out += ront;
-                    }
-                }
                 if (show_replace) {
                     out += "<div id='tipue_search_replace'>" + tipuesearch_string_2 + " " + d + ". " + tipuesearch_string_3 + " <a id='tipue_search_replaced'>" + d_r + "</a></div>";
                 }
@@ -316,10 +289,6 @@ window.onload = function execute(){
                 getTipueSearch(0, false);
             };
         }
-        document.getElementsByClassName("tipue_search_related_btn").onclick = function() {
-            document.getElementById("tipue_search_input").value = this.id;
-            getTipueSearch(0, true);
-        };
         document.getElementsByClassName("tipue_search_foot_box").onclick = function() {
             var id_v = this.id;
             var id_a = id_v.split("_");
