@@ -7,7 +7,6 @@ window.onload = function execute(){
         "descriptiveWords": 25,
         "footerPages": 3,
         "highlightTerms": true,
-        "imageZoom": true,
         "minimumLength": 3,
         "mode": "json",
         "newWindow": false,
@@ -116,7 +115,6 @@ window.onload = function execute(){
                             "score": score,
                             "title": tipuesearch.pages[i].title,
                             "desc": s_t,
-                            "img": tipuesearch.pages[i].img,
                             "url": tipuesearch.pages[i].url,
                             "note": tipuesearch.pages[i].note
                         });
@@ -135,7 +133,6 @@ window.onload = function execute(){
                             "score": score,
                             "title": tipuesearch.pages[i].title,
                             "desc": s_t,
-                            "img": tipuesearch.pages[i].img,
                             "url": tipuesearch.pages[i].url,
                             "note": tipuesearch.pages[i].note
                         });
@@ -194,9 +191,6 @@ window.onload = function execute(){
                     return b.score - a.score
                 });
                 var l_o = 0;
-                if (set.imageZoom) {
-                    out += "<div id='tipue_search_image_modal'><div class='tipue_search_image_close'>&#10005;</div><div class='tipue_search_image_block'><a id='tipue_search_zoom_url'><img id='tipue_search_zoom_img'></a><div id='tipue_search_zoom_text'></div></div></div>";
-                }
                 for (var i = 0; i < found.length; i++) {
                     if (l_o >= start && l_o < set.show + start) {
                         out += "<div class='tipue_search_result'>";
@@ -210,13 +204,6 @@ window.onload = function execute(){
                                 s_u = s_u.slice(7);
                             }
                             out += "<div class='tipue_search_content_url'><a href='" + found[i].url + "'" + tipue_search_w + ">" + s_u + "</a></div>";
-                        }
-                        if (found[i].img) {
-                            if (set.imageZoom) {
-                                out += "<div class='tipue_search_image'><img class='tipue_search_img tipue_search_image_zoom' src='" + found[i].img + "' alt='" + found[i].title + "' data-url='" + found[i].url + "'></div>";
-                            } else {
-                                out += "<div class='tipue_search_image'><a href='" + found[i].url + "'" + tipue_search_w + "><img class='tipue_search_img' src='" + found[i].img + "' alt='" + found[i].title + "'></a></div>";
-                            }
                         }
                         if (found[i].desc) {
                             var t = found[i].desc;
@@ -332,15 +319,6 @@ window.onload = function execute(){
         document.getElementsByClassName("tipue_search_related_btn").onclick = function() {
             document.getElementById("tipue_search_input").value = this.id;
             getTipueSearch(0, true);
-        };
-        document.getElementsByClassName("tipue_search_image_zoom").onclick = function() {
-            document.getElementById("tipue_search_zoom_img").src = this.src;
-            var z_u = this.data-url;
-            document.getElementById("tipue_search_zoom_url").href = z_u;
-            var z_o = this.alt + "<div class='tipue_search_zoom_options'><a href='" + this.src + "' target='_blank'>" + tipuesearch_string_15 + "</a>&nbsp; <a href='" + z_u + "'>" + tipuesearch_string_16 + "</a></div>";
-            document.getElementById("tipue_search_zoom_text").innerHTML = z_o;
-        };
-        document.getElementsByClassName("tipue_search_image_close").onclick = function() {
         };
         document.getElementsByClassName("tipue_search_foot_box").onclick = function() {
             var id_v = this.id;
