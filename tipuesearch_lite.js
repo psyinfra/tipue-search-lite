@@ -30,16 +30,6 @@ var tipuesearch_stem = {'words': [
      {'word': 'javascript', 'stem': 'js'}
 ]};
 
-// Related
-var tipuesearch_related = {'Related': [
-     {'search': 'tipue', 'related': 'Search', 'include': 1},
-     {'search': 'tipue', 'related': 'jQuery'},
-     {'search': 'tipue', 'related': 'Blog'},
-     {'search': 'tipue', 'related': 'Support'},
-     {'search': 'tipue search', 'related': 'Demo', 'include': 1},
-     {'search': 'tipue search', 'related': 'Support'}
-]};
-
 // Internal strings
 var tipuesearch_string_1 = 'No title';
 var tipuesearch_string_2 = 'Showing results for';
