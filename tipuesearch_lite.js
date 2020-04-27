@@ -34,12 +34,10 @@ window.onload = function execute(){
         "contextStart": 90,
         "debug": false,
         "descriptiveWords": 25,
-        "footerPages": 3,
         "highlightTerms": true,
         "minimumLength": 3,
         "mode": "json",
         "newWindow": false,
-        "show": 1000,
         "showContext": true,
         "showTime": true,
         "showTitleCount": true,
@@ -55,10 +53,10 @@ window.onload = function execute(){
 
     if (params.get("q")) {
         document.getElementById("tipue_search_input").value = params.get("q");
-        getTipueSearch(0, true);
+        getTipueSearch();
     }
 
-    function getTipueSearch(start, replace) {
+    function getTipueSearch() {
         window.scrollTo(0, 0);
         var out = "";
         var show_stop = false;
@@ -164,105 +162,63 @@ window.onload = function execute(){
                 });
                 var l_o = 0;
                 for (var i = 0; i < found.length; i++) {
-                    if (l_o >= start && l_o < set.show + start) {
-                        out += "<div class='tipue_search_result'>";
-                        out += "<div class='tipue_search_content_title'><a href='" + found[i].url + "'" + tipue_search_w + ">" + found[i].title + "</a></div>";
-                        if (set.debug) {
-                            out += "<div class='tipue_search_content_debug'>Score: " + found[i].score + "</div>";
-                        }
-                        if (set.showURL) {
-                            out += "<div class='tipue_search_content_url'><a href='" + found[i].url + "'" + tipue_search_w + ">" + found[i].url + "</a></div>";
-                        }
-                        if (found[i].desc) {
-                            var t = found[i].desc;
-                            if (set.showContext) {
-                                d_w = d.split(" ");
-                                var s_1 = found[i].desc.toLowerCase().indexOf(d_w[0]);
-                                if (s_1 > set.contextStart) {
-                                    var t_1 = t.substr(s_1 - set.contextBuffer);
-                                    var s_2 = t_1.indexOf(" ");
-                                    t_1 = t.substr(s_1 - set.contextBuffer + s_2);
-                                    t_1 = t_1.trim();
-                                    if (t_1.length > set.contextLength) {
-                                        t = "... " + t_1;
-                                    }
-                                }
-                            }
-                            if (standard) {
-                                d_w = d.split(" ");
-                                for (var f = 0; f < d_w.length; f++) {
-                                    if (set.highlightTerms) {
-                                        var patr = new RegExp("(" + d_w[f] + ")", "gi");
-                                        t = t.replace(patr, "<h0011>$1<h0012>");
-                                    }
-                                }
-                            } else if (set.highlightTerms) {
-                                var patr = new RegExp("(" + d + ")", "gi");
-                                t = t.replace(patr, "<span class=\"tipue_search_content_bold\">$1</span>");
-                            }
-                            var t_d = "";
-                            var t_w = t.split(" ");
-                            if (t_w.length < set.descriptiveWords) {
-                                t_d = t;
-                            } else {
-                                for (var f = 0; f < set.descriptiveWords; f++) {
-                                    t_d += t_w[f] + " ";
-                                }
-                            }
-                            t_d = t_d.trim();
-                            if (t_d.charAt(t_d.length - 1) != ".") {
-                                t_d += " ...";
-                            }
-                            t_d = t_d.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
-                            t_d = t_d.replace(/h0012/g, "/span");
-                            out += "<div class='tipue_search_content_text'>" + t_d + "</div>";
-                        }
-                        if (found[i].note) {
-                            out += "<div class='tipue_search_note'>" + found[i].note + "</div>";
-                        }
-                        out += "</div>";
+                    out += "<div class='tipue_search_result'>";
+                    out += "<div class='tipue_search_content_title'><a href='" + found[i].url + "'" + tipue_search_w + ">" + found[i].title + "</a></div>";
+                    if (set.debug) {
+                        out += "<div class='tipue_search_content_debug'>Score: " + found[i].score + "</div>";
                     }
+                    if (set.showURL) {
+                        out += "<div class='tipue_search_content_url'><a href='" + found[i].url + "'" + tipue_search_w + ">" + found[i].url + "</a></div>";
+                    }
+                    if (found[i].desc) {
+                        var t = found[i].desc;
+                        if (set.showContext) {
+                            d_w = d.split(" ");
+                            var s_1 = found[i].desc.toLowerCase().indexOf(d_w[0]);
+                            if (s_1 > set.contextStart) {
+                                var t_1 = t.substr(s_1 - set.contextBuffer);
+                                var s_2 = t_1.indexOf(" ");
+                                t_1 = t.substr(s_1 - set.contextBuffer + s_2);
+                                t_1 = t_1.trim();
+                                if (t_1.length > set.contextLength) {
+                                    t = "... " + t_1;
+                                }
+                            }
+                        }
+                        if (standard) {
+                            d_w = d.split(" ");
+                            for (var f = 0; f < d_w.length; f++) {
+                                if (set.highlightTerms) {
+                                    var patr = new RegExp("(" + d_w[f] + ")", "gi");
+                                    t = t.replace(patr, "<h0011>$1<h0012>");
+                                }
+                            }
+                        } else if (set.highlightTerms) {
+                            var patr = new RegExp("(" + d + ")", "gi");
+                            t = t.replace(patr, "<span class=\"tipue_search_content_bold\">$1</span>");
+                        }
+                        var t_d = "";
+                        var t_w = t.split(" ");
+                        if (t_w.length < set.descriptiveWords) {
+                            t_d = t;
+                        } else {
+                            for (var f = 0; f < set.descriptiveWords; f++) {
+                                t_d += t_w[f] + " ";
+                            }
+                        }
+                        t_d = t_d.trim();
+                        if (t_d.charAt(t_d.length - 1) != ".") {
+                            t_d += " ...";
+                        }
+                        t_d = t_d.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
+                        t_d = t_d.replace(/h0012/g, "/span");
+                        out += "<div class='tipue_search_content_text'>" + t_d + "</div>";
+                    }
+                    if (found[i].note) {
+                        out += "<div class='tipue_search_note'>" + found[i].note + "</div>";
+                    }
+                    out += "</div>";
                     l_o++;
-                }
-                if (c > set.show) {
-                    var pages = Math.ceil(c / set.show);
-                    var page = (start / set.show);
-                    if (set.footerPages < 3) {
-                        set.footerPages = 3;
-                    }
-                    out += "<div id='tipue_search_foot'><ul id='tipue_search_foot_boxes'>";
-                    if (start > 0) {
-                        out += "<li role='navigation'><a class='tipue_search_foot_box' accesskey='b' id='" + (start - set.show) + "_" + replace + "'>&lt;</a></li>";
-                    }
-                    if (page <= 2) {
-                        var p_b = pages;
-                        if (pages > set.footerPages) {
-                            p_b = set.footerPages;
-                        }
-                        for (var f = 0; f < p_b; f++) {
-                            if (f == page) {
-                                out += "<li class='current' role='navigation'>" + (f + 1) + "</li>";
-                            } else {
-                                out += "<li role='navigation'><a class='tipue_search_foot_box' id='" + (f * set.show) + "_" + replace + "'>" + (f + 1) + "</a></li>";
-                            }
-                        }
-                    } else {
-                        var p_b = page + set.footerPages - 1;
-                        if (p_b > pages) {
-                            p_b = pages;
-                        }
-                        for (var f = page - 1; f < p_b; f++) {
-                            if (f == page) {
-                                out += "<li class='current' role='navigation'>" + (f + 1) + "</li>";
-                            } else {
-                                out += "<li role='navigation'><a class='tipue_search_foot_box' id='" + (f * set.show) + "_" + replace + "'>" + (f + 1) + "</a></li>";
-                            }
-                        }
-                    }
-                    if (page + 1 != pages) {
-                        out += "<li role='navigation'><a class='tipue_search_foot_box' accesskey='m' id='" + (start + set.show) + "_" + replace + "'>&gt;</a></li>";
-                    }
-                    out += "</ul></div>";
                 }
             } else {
                 out += "<div id='tipue_search_error'>Nothing found.</div>";
@@ -279,11 +235,6 @@ window.onload = function execute(){
             }
         }
         document.getElementById("tipue_search_content").innerHTML = out;
-        document.getElementsByClassName("tipue_search_foot_box").onclick = function() {
-            var id_v = this.id;
-            var id_a = id_v.split("_");
-            getTipueSearch(parseInt(id_a[0]), id_a[1]);
-        };
     }
 
     // -------------------- SEARCH ALGORITHM ------------------------
