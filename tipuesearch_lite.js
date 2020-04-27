@@ -23,24 +23,6 @@ var tipuesearch_stem = {'words': [
      {'word': 'javascript', 'stem': 'js'}
 ]};
 
-// Internal strings
-var tipuesearch_string_1 = 'No title';
-var tipuesearch_string_2 = 'Showing results for';
-var tipuesearch_string_3 = 'Search instead for';
-var tipuesearch_string_4 = '1 result';
-var tipuesearch_string_5 = 'results';
-var tipuesearch_string_6 = '<';
-var tipuesearch_string_7 = '>';
-var tipuesearch_string_8 = 'Nothing found.';
-var tipuesearch_string_9 = 'Common words are largely ignored.';
-var tipuesearch_string_10 = 'Related';
-var tipuesearch_string_11 = 'Search should be one character or more.';
-var tipuesearch_string_12 = 'Search should be';
-var tipuesearch_string_13 = 'characters or more.';
-var tipuesearch_string_14 = 'seconds';
-var tipuesearch_string_15 = 'Open Image';
-var tipuesearch_string_16 = 'Goto Page';
-
 // Timer for showTime
 var startTimer = new Date().getTime();
 
@@ -165,15 +147,15 @@ window.onload = function execute(){
                     tipuesearch_t_c++;
                 }
                 if (c == 1) {
-                    out += "<div id='tipue_search_results_count'>" + tipuesearch_string_4;
+                    out += "<div id='tipue_search_results_count'>1 result";
                 } else {
                     var c_c = c.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                    out += "<div id='tipue_search_results_count'>" + c_c + " " + tipuesearch_string_5;
+                    out += "<div id='tipue_search_results_count'>" + c_c + " results";
                 }
                 if (set.showTime) {
                     var endTimer = new Date().getTime();
                     var time = (endTimer - startTimer) / 1000;
-                    out += " (" + time.toFixed(2) + " " + tipuesearch_string_14 + ")";
+                    out += " (" + time.toFixed(2) + " seconds)";
                 }
                 out += "</div>";
 
@@ -250,7 +232,7 @@ window.onload = function execute(){
                     }
                     out += "<div id='tipue_search_foot'><ul id='tipue_search_foot_boxes'>";
                     if (start > 0) {
-                        out += "<li role='navigation'><a class='tipue_search_foot_box' accesskey='b' id='" + (start - set.show) + "_" + replace + "'>" + tipuesearch_string_6 + "</a></li>";
+                        out += "<li role='navigation'><a class='tipue_search_foot_box' accesskey='b' id='" + (start - set.show) + "_" + replace + "'>&lt;</a></li>";
                     }
                     if (page <= 2) {
                         var p_b = pages;
@@ -278,21 +260,21 @@ window.onload = function execute(){
                         }
                     }
                     if (page + 1 != pages) {
-                        out += "<li role='navigation'><a class='tipue_search_foot_box' accesskey='m' id='" + (start + set.show) + "_" + replace + "'>" + tipuesearch_string_7 + "</a></li>";
+                        out += "<li role='navigation'><a class='tipue_search_foot_box' accesskey='m' id='" + (start + set.show) + "_" + replace + "'>&gt;</a></li>";
                     }
                     out += "</ul></div>";
                 }
             } else {
-                out += "<div id='tipue_search_error'>" + tipuesearch_string_8 + "</div>";
+                out += "<div id='tipue_search_error'>Nothing found.</div>";
             }
         } else {
             if (show_stop) {
-                out += "<div id='tipue_search_error'>" + tipuesearch_string_8 + " " + tipuesearch_string_9 + "</div>";
+                out += "<div id='tipue_search_error'>Nothing found. Common words are largely ignored.</div>";
             } else {
                 if (set.minimumLength == 1) {
-                    out += "<div id='tipue_search_error'>" + tipuesearch_string_11 + "</div>";
+                    out += "<div id='tipue_search_error'>Search should be one character or more.</div>";
                 } else {
-                    out += "<div id='tipue_search_error'>" + tipuesearch_string_12 + " " + set.minimumLength + " " + tipuesearch_string_13 + "</div>";
+                    out += "<div id='tipue_search_error'>Search should be " + set.minimumLength + " characters or more.</div>";
                 }
             }
         }
