@@ -327,6 +327,7 @@ window.onload = function execute(){
     }
 
     function tipue_KMP_single(pat, s_text, set, i){
+        var score = 0;
         var pre_tab = KMP_prefix(pat, pat.length);
 
         var match_cnt = KMP_search(pat, pre_tab, tipuesearch.pages[i].title);
