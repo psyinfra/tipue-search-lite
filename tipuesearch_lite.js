@@ -28,11 +28,6 @@ window.onload = function execute(){
         document.getElementById("tipue_search_input").value = params.get("q");
         getTipueSearch(0, true);
     }
-    document.onkeyup = function(event) {
-        if (event.keyCode == "13") {
-            getTipueSearch(0, true);
-        }
-    };
 
     function getTipueSearch(start, replace) {
         window.scrollTo(0, 0);
