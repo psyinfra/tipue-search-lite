@@ -8,13 +8,6 @@ http://www.tipue.com/search
 //Stop words list from http://www.ranks.nl/stopwords
 var tipuesearch_stop_words = ["a", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't", "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"];
 
-// Word replace
-var tipuesearch_replace = {'words': [
-     {'word': 'tip', 'replace_with': 'tipue'},
-     {'word': 'javscript', 'replace_with': 'javascript'},
-     {'word': 'jqeury', 'replace_with': 'jquery'}
-]};
-
 // Weighting
 var tipuesearch_weight = {'weight': [
      {'url': 'http://www.tipue.com', 'score': 60},
@@ -86,7 +79,6 @@ window.onload = function execute(){
     function getTipueSearch(start, replace) {
         window.scrollTo(0, 0);
         var out = "";
-        var show_replace = false;
         var show_stop = false;
         var standard = true;
         var c = 0;
@@ -121,18 +113,6 @@ window.onload = function execute(){
         }
         if (d.length >= set.minimumLength) {
             if (standard) {
-                if (replace) {
-                    var d_r = d;
-                    for (var i = 0; i < d_w.length; i++) {
-                        for (var f = 0; f < tipuesearch_replace.words.length; f++) {
-                            if (d_w[i] == tipuesearch_replace.words[f].word) {
-                                d = d.replace(d_w[i], tipuesearch_replace.words[f].replace_with);
-                                show_replace = true;
-                            }
-                        }
-                    }
-                    d_w = d.split(" ");
-                }
                 var d_t = d;
                 for (var i = 0; i < d_w.length; i++) {
                     for (var f = 0; f < tipuesearch_stem.words.length; f++) {
@@ -196,9 +176,7 @@ window.onload = function execute(){
                     out += " (" + time.toFixed(2) + " " + tipuesearch_string_14 + ")";
                 }
                 out += "</div>";
-                if (show_replace) {
-                    out += "<div id='tipue_search_replace'>" + tipuesearch_string_2 + " " + d + ". " + tipuesearch_string_3 + " <a id='tipue_search_replaced'>" + d_r + "</a></div>";
-                }
+
                 found.sort(function(a, b) {
                     return b.score - a.score
                 });
@@ -319,11 +297,6 @@ window.onload = function execute(){
             }
         }
         document.getElementById("tipue_search_content").innerHTML = out;
-        if(show_replace){
-            document.getElementById("tipue_search_replaced").onclick = function() {
-                getTipueSearch(0, false);
-            };
-        }
         document.getElementsByClassName("tipue_search_foot_box").onclick = function() {
             var id_v = this.id;
             var id_a = id_v.split("_");
