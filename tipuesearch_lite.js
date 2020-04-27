@@ -162,11 +162,7 @@ window.onload = function execute(){
                             out += "<div class='tipue_search_content_debug'>Score: " + found[i].score + "</div>";
                         }
                         if (set.showURL) {
-                            var s_u = found[i].url.toLowerCase();
-                            if (s_u.indexOf("http://") == 0) {
-                                s_u = s_u.slice(7);
-                            }
-                            out += "<div class='tipue_search_content_url'><a href='" + found[i].url + "'" + tipue_search_w + ">" + s_u + "</a></div>";
+                            out += "<div class='tipue_search_content_url'><a href='" + found[i].url + "'" + tipue_search_w + ">" + found[i].url + "</a></div>";
                         }
                         if (found[i].desc) {
                             var t = found[i].desc;
