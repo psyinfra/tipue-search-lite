@@ -22,20 +22,10 @@ window.onload = function execute(){
     if (set.newWindow) {
         tipue_search_w = " target='_blank'";
     }
+    let params = new URLSearchParams(document.location.search.substring(1));
 
-    function getURLP(name) {
-        var locSearch = location.search;
-        var splitted=(new RegExp("[?|&]" + name + "=" + "([^&;]+?)(&|#|;|$)").exec(locSearch)||[,""]);
-        var searchString = splitted[1].replace(/\+/g, "%20");
-        try {
-            searchString = decodeURIComponent(searchString);
-        } catch (e) {
-            searchString = unescape(searchString);
-        }
-        return searchString || null;
-    }
-    if (getURLP("q")) {
-        document.getElementById("tipue_search_input").value = getURLP("q");
+    if (params.get("q")) {
+        document.getElementById("tipue_search_input").value = params.get("q");
         getTipueSearch(0, true);
     }
     document.onkeyup = function(event) {
