@@ -36,7 +36,6 @@ window.onload = function execute(){
         "descriptiveWords": 25,
         "highlightTerms": true,
         "minimumLength": 3,
-        "mode": "json",
         "newWindow": false,
         "showContext": true,
         "showTime": true,
@@ -57,7 +56,6 @@ window.onload = function execute(){
     }
 
     function getTipueSearch() {
-        window.scrollTo(0, 0);
         var out = "";
         var show_stop = false;
         var standard = true;
