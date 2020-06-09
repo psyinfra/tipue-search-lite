@@ -325,36 +325,4 @@ window.onload = function execute(){
         }
         return score;
     }
-
-    function tipue_KMP_single(pat, s_text, set, i){
-        var score = 0;
-        var pre_tab = KMP_prefix(pat, pat.length);
-
-        var match_cnt = KMP_search(pat, pre_tab, tipuesearch.pages[i].title);
-        if(match_cnt!=0){
-            score+=(20*match_cnt);
-        }
-        match_cnt = KMP_search(pat, pre_tab, s_text);
-        if(match_cnt!=0){
-            score+=(20*match_cnt);
-        }
-
-        if(tipuesearch.pages[i].tags){
-            match_cnt = KMP_search(pat, pre_tab, tipuesearch.pages[i].tags);
-            if(match_cnt!=0){
-                score+=(10*match_cnt);
-            }
-        }
-        if(KMP_search(pat, pre_tab, tipuesearch.pages[i].tags)!=0){
-            score+=20;
-        }
-        if(score!=0){
-            for(var e=0;e<tipuesearch_weight.weight.length;e++){
-                if(tipuesearch.pages[i].url==tipuesearch_weight.weight[e].url){
-                    score+=tipuesearch_weight.weight[e].score;
-                }
-            }
-        }
-        return score;
-    }
 };
