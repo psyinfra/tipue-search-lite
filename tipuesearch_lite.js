@@ -70,6 +70,7 @@ window.onload = function execute(){
             standard = false;
         }
         var d_w = d.split(" ");
+
         if (standard) {
             d = "";
             for (var i = 0; i < d_w.length; i++) {
@@ -104,7 +105,7 @@ window.onload = function execute(){
                     var score = 0;
                     var s_t = tipuesearch.pages[i].text;
 
-                    score = tipue_KMP_multiple(d_w, s_t, set, i);
+                    score = tipue_KMP(d_w, s_t, set, i);
 
                     if (score != 0) {
                         found.push({
@@ -118,11 +119,12 @@ window.onload = function execute(){
                     }
                 }
             } else {
+                d_w = d.split(" ");
                 for (var i = 0; i < tipuesearch.pages.length; i++) {
                     var score = 0;
                     var s_t = tipuesearch.pages[i].text;
 
-                    score = tipue_KMP_single(d, s_t, set, i);
+                    score = tipue_KMP(d_w, s_t, set, i);
 
                     if (score != 0) {
                         found.push({
@@ -265,7 +267,7 @@ window.onload = function execute(){
 
         for (var position_in_text = 0; position_in_text < text.length; position_in_text++){
             // move pattern until text and pattern match
-            while (position_in_pattern >= 0 && text[position_in_text] !== pattern[position_in_pattern]){
+            while (position_in_pattern >= 0 && text[position_in_text].toLowerCase() !== pattern[position_in_pattern].toLowerCase()){
                 // use prefix-table
                 position_in_pattern = prefix_table[position_in_pattern];
             }
@@ -284,7 +286,7 @@ window.onload = function execute(){
         return cnt;
     }
 
-    function tipue_KMP_multiple(d_w, s_text, set, i){
+    function tipue_KMP(d_w, s_text, set, i){
         var score = 0;
         for(var f=0;f<d_w.length;f++){
             var pre_tab = KMP_prefix(d_w[f], d_w[f].length);
