@@ -54,6 +54,26 @@ window.onload = function execute(){
         getTipueSearch();
     }
 
+    document.getElementById('tipue_search_input').form.onsubmit = function() {
+        getTipueSearch();
+
+        var history_url = '';
+        var history_title = '';
+
+        var term = document.getElementById("tipue_search_input").value;
+        if (!term || term.length === 0) {
+          history_url = location.href.split('?')[0];
+        } else {
+          history_url = history_url + '?q=' + term;
+          history_title = 'Search - ' + term;
+        }
+
+        // add to address bar and history
+        history.pushState({}, history_title, history_url);
+
+        return false;
+    }
+
     function getTipueSearch() {
         var out = "";
         var show_stop = false;
