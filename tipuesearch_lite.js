@@ -1,8 +1,7 @@
 /*
-Tipue Search 7.1
+Tipue Search Lite 8.0
 Copyright (c) 2019 Tipue
-Tipue Search is released under the MIT License
-http://www.tipue.com/search
+Tipue Search Lite is released under the MIT License
 */
 
 //Stop words list from http://www.ranks.nl/stopwords
