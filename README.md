@@ -1,6 +1,6 @@
 # Tipue Search Lite
 
-Tipue Search Lite is a vanilla javascript fork of the popular Tipue Search
+Tipue Search Lite is a vanilla javascript fork of the popular [Tipue Search](https://github.com/michael-milette/Tipue-Search)
 project with a simplified feature set. No jQuery is required.
 
 Tipue Search Lite is most commonly used as a search engine for static websites.
