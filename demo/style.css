@@ -1,0 +1,40 @@
+a:hover {
+  color: #ff5a09;
+}
+
+body {
+  margin: 2em auto;
+  padding: 2em;
+  max-width: 800px;
+}
+
+h1 {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1.8em;
+  font-weight: normal;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.searchbox {
+  border-top: 1px solid #bbb;
+  padding: 1em 0;
+}
+.searchbox input {
+  border: 1px solid #ccc;
+  color: #666;
+  line-height: 1.7;
+  padding: 0.2em 0.5em;
+  width: calc(100% - 1em - 2px);
+}
+
+.tipue_search_content_bold  {
+  font-weight: bold;
+}
+.tipue_search_content_title {
+  padding-top: 1em;
+}
+.tipue_search_content_text  {
+  padding-bottom: 1em;
+  border-bottom: 1px solid #eee;
+}
