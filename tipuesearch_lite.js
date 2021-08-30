@@ -22,10 +22,6 @@ var tipuesearch_stem = {'words': [
      {'word': 'javascript', 'stem': 'js'}
 ]};
 
-// Timer for showTime
-var startTimer = new Date().getTime();
-
-
 window.onload = function execute(){
     var set = {
         "contextBuffer": 60,
@@ -75,6 +71,7 @@ window.onload = function execute(){
     }
 
     function getTipueSearch() {
+        var startTimer = new Date().getTime();
         var out = "";
         var show_stop = false;
         var standard = true;
