@@ -15,13 +15,6 @@ var tipuesearch_weight = {'weight': [
      {'url': 'http://www.tipue.com/support', 'score': 20}
 ]};
 
-// these words get replaced by stem if they are searched (e-mail shows results for email)
-var tipuesearch_stem = {'words': [
-     {'word': 'e-mail', 'stem': 'email'},
-     {'word': 'javascript', 'stem': 'jquery'},
-     {'word': 'javascript', 'stem': 'js'}
-]};
-
 window.onload = function execute(){
     var set = {
         "contextBuffer": 60,
@@ -39,15 +32,9 @@ window.onload = function execute(){
         "wholeWords": true
     };
 
-	// TODO: possibly better change var above, instead of flag if it is still relevant
     // remember if title gets set (to modify tab-name just once)
     var tabTitleFlag = true
 
-    var tipue_search_w = "";
-    if (set.newWindow) {
-    	// TODO: this gets never modified, just used two times in a string.
-        tipue_search_w = " target='_blank'";
-    }
     let params = new URLSearchParams(document.location.search.substring(1));
 
     // read search box, call search
@@ -73,7 +60,6 @@ window.onload = function execute(){
 
         // add to address bar and history
         history.pushState({}, history_title, history_url);
-
         return false;
     }
 
@@ -84,90 +70,69 @@ window.onload = function execute(){
 		// string for html output
 
         var out = "";
-        // if only stop words (common words) get found, prints out "nothing found. Common words get ignored"
+        // inform if just common words like "and" are used in search (they are ignored)
         var stopWordsFoundFlag = false;
-        // TODO: understand/delete standard: (d.match("^\"") && d.match("\"$")) || (d.match("^'") && d.match("'$")))
+		// flag if special characters are used
         var standard = true;
 		// counts amount of results/pages found
         var resultCounter = 0;
         // found saves objects about pages that are found
         var found = [];
 
-        // search word
+        // get and modify search word
         var searchBoxInput = document.getElementById("tipue_search_input").value;
         searchBoxInput = searchBoxInput.replace(/\+/g, " ").replace(/\s\s+/g, " ");
         searchBoxInput = searchBoxInput.trim();
         var temp_searchWord = searchBoxInput.toLowerCase();
 
-		// if special break characters get used
+		// if special characters get used
         if ((temp_searchWord.match("^\"") && temp_searchWord.match("\"$")) ||
         (temp_searchWord.match("^'") && temp_searchWord.match("'$"))) {
             standard = false;
         }
         var searchWordList = temp_searchWord.split(" ");
 
-		// MODIFY SEARCH WORDS - BLOCK
-		// this whole if(standard) deletes the stop words from the search
+		// ignore stop words in search words
         if (standard) {
-        	// TODO: start with searchWordList, iterate over stop-word and delete them from temporary list
-        	// saves temporarly the search words from d_w (if they are not common words)
             temp_searchWord = "";
-            // for each word check if it is a stop word (common word)
+            // for each word, check if it is stop word (common word)
             for (var i = 0; i < searchWordList.length; i++) {
-            	// this is true as long as no common word gets found.
-                var a_w = true;
+                var realSearchWord = true;
                 for (var f = 0; f < tipuesearch_stop_words.length; f++) {
                     if (searchWordList[i] == tipuesearch_stop_words[f]) {
-                        a_w = false;
-                        // saves if a stop word was found at some point
+                        realSearchWord = false;
+                        // saves if any stop word was found at some point
                         stopWordsFoundFlag = true;
                     }
                 }
                 // if no stop word, add it to list of search words
-                if (a_w) {
+                if (realSearchWord) {
                   temp_searchWord += " " + searchWordList[i];
                 }
             }
             temp_searchWord = temp_searchWord.trim();
-            searchWordList = temp_searchWord.split(" ");
-		// TODO: not sure about the else case, seems to depend on d.match(...)
         } else {
             temp_searchWord = temp_searchWord.substring(1, temp_searchWord.length - 1);
         }
+        searchWordList = temp_searchWord.split(" ");
 
-		// SEARCH TROUGH PAGES - BLOCK
-        // minimal amount of characters searched for
+        // do actual "search" if the search word list is long enough
         if (temp_searchWord.length >= set.minimumLength) {
-            if (standard) {
-                // TODO: d_t is temp var?
-                var d_t = temp_searchWord;
-                // TODO: EITHER DELETE THIS AND THE REPLACEMENT WORDS, OR MOVE UP TO OTHER BLOCK
-                // this loop seems to replace words like e-mail with email. I am not sure, if this big if (standard) is needed, because if nothing to replace, the loop gets ignored anyways?
-                for (var i = 0; i < searchWordList.length; i++) {
-                    for (var f = 0; f < tipuesearch_stem.words.length; f++) {
-                        if (searchWordList[i] == tipuesearch_stem.words[f].word) {
-                            d_t = d_t + " " + tipuesearch_stem.words[f].stem;
-                        }
-                    }
-                }
-            }
-            searchWordList = d_t.split(" ");
-            // TOODO: check if right:
-            // seems to loop over every single page of the wiki (?), gets the text, calculates score and pushes result to "found"
+            // loop over pages and search in text
             for (var i = 0; i < tipuesearch.pages.length; i++) {
                 var score = 0;
                 // text of current wikitext
-                var s_t = tipuesearch.pages[i].text;
+                var pageContentString = tipuesearch.pages[i].text;
 
-	            // this searches for all the search words in the text of the current wikipage
-                score = tipue_KMP(searchWordList, s_t, set, i);
+	            // call of search algorithm
+                score = tipue_KMP(searchWordList, pageContentString, set, i);
 
 				// if the page contains search words, save the title etc
                 if (score != 0) {
                     found.push({
                         "score": score,
                         "title": tipuesearch.pages[i].title,
-                        "desc": s_t,
+                        "desc": pageContentString,
                         "url": tipuesearch.pages[i].url,
                         "note": tipuesearch.pages[i].note
                     });
@@ -178,23 +143,20 @@ window.onload = function execute(){
 
             // building up the web-page that shows the search results
             if (resultCounter != 0) {
-            	// add the number of results found to document title (add number to tab-name)
+            	// TODO: number does not get updated in demo if a second word with different number gets searched.
+            	// add number of search results to tab-name
                 if (set.showTitleCount && tabTitleFlag) {
                     var title = document.title;
                     document.title = "(" + resultCounter + ") " + title;
                     tabTitleFlag = false;
                 }
-
 				// "X results found" output line
                 if (resultCounter == 1) {
                     out += "<div id='tipue_search_results_count'>1 result";
                 } else {
-                    var c_c = resultCounter.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                    //TODO: why replace this weird expression, should be just an integer
-                    out += "<div id='tipue_search_results_count'>" + c_c + " results";
+                    out += "<div id='tipue_search_results_count'>" + resultCounter.toString() + " results";
                 }
-
-                // show how long search took
+                // display search time
                 if (set.showTime) {
                     var endTimer = new Date().getTime();
                     var time = (endTimer - startTimer) / 1000;
@@ -207,19 +169,19 @@ window.onload = function execute(){
                     return b.score - a.score
                 });
 
+                // add output for each found page
                 for (var i = 0; i < found.length; i++) {
                     out += "<div class='tipue_search_result'>";
-                    out += "<div class='tipue_search_content_title'><a href='" + found[i].url + "'" + tipue_search_w + ">" + found[i].title + "</a></div>";
+					out += "<div class='tipue_search_content_title'><a href='" + found[i].url + "'>" + found[i].title + "</a></div>";
                     if (set.debug) {
                         out += "<div class='tipue_search_content_debug'>Score: " + found[i].score + "</div>";
                     }
                     if (set.showURL) {
-                        out += "<div class='tipue_search_content_url'><a href='" + found[i].url + "'" + tipue_search_w + ">" + found[i].url + "</a></div>";
+                        out += "<div class='tipue_search_content_url'><a href='" + found[i].url + "'>" + found[i].url + "</a></div>";
                     }
+                    // add and modify output (for example display search words in bold)
                     if (found[i].desc) {
                         var t = found[i].desc;
-                        // TODO: searchWordList does not get modified, so it does not need to be set again
-                        searchWordList = temp_searchWord.split(" ");
                         if (set.showContext) {
                             var s_1 = found[i].desc.toLowerCase().indexOf(searchWordList[0]);
                             if (s_1 > set.contextStart) {
@@ -275,6 +237,7 @@ window.onload = function execute(){
                 out += "<div id='tipue_search_error'>Search should be " + set.minimumLength + " or more characters.</div>";
             }
         }
+        // give the page the actual contents, which were build up
         document.getElementById("tipue_search_content").innerHTML = out;
     }
 
