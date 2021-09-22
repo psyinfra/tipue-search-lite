@@ -14,6 +14,7 @@ Differences from Tipue Search 7.1
 * Removed image support
 * Removed "related searches"
 * Removed "word replacement"
+* Removed "stemming replacement"
 * Removed pagination of results
 * Linting and code simplification
 
