@@ -9,10 +9,10 @@ var tipuesearch_stop_words = ["a", "above", "after", "again", "against", "all", 
 
 // Weighting for tipue KMP algorithm
 var tipuesearch_weight = {'weight': [
-     {'url': 'http://www.tipue.com', 'score': 60},
-     {'url': 'http://www.tipue.com/search', 'score': 60},
-     {'url': 'http://www.tipue.com/tipr', 'score': 30},
-     {'url': 'http://www.tipue.com/support', 'score': 20}
+    {'url': 'http://www.tipue.com', 'score': 60},
+    {'url': 'http://www.tipue.com/search', 'score': 60},
+    {'url': 'http://www.tipue.com/tipr', 'score': 30},
+    {'url': 'http://www.tipue.com/support', 'score': 20}
 ]};
 
 window.onload = function execute(){
@@ -43,7 +43,7 @@ window.onload = function execute(){
         getTipueSearch();
     }
 
-	// add to history
+    // add to history
     document.getElementById('tipue_search_input').form.onsubmit = function() {
         getTipueSearch();
 
@@ -52,10 +52,10 @@ window.onload = function execute(){
 
         var term = document.getElementById("tipue_search_input").value;
         if (!term || term.length === 0) {
-          history_url = location.href.split('?')[0];
+            history_url = location.href.split('?')[0];
         } else {
-          history_url = history_url + '?q=' + term;
-          history_title = 'Search - ' + term;
+            history_url = history_url + '?q=' + term;
+            history_title = 'Search - ' + term;
         }
 
         // add to address bar and history
@@ -64,17 +64,16 @@ window.onload = function execute(){
     }
 
     function getTipueSearch() {
-
-		// Timer for showTime
-		var startTimer = new Date().getTime();
-		// string for html output
+        // Timer for showTime
+        var startTimer = new Date().getTime();
+        // string for html output
 
         var out = "";
         // inform if just common words like "and" are used in search (they are ignored)
         var stopWordsFoundFlag = false;
-		// flag if special characters are used
+        // flag if special characters are used
         var standard = true;
-		// counts amount of results/pages found
+        // counts amount of results/pages found
         var resultCounter = 0;
         // found saves objects about pages that are found
         var found = [];
@@ -85,14 +84,14 @@ window.onload = function execute(){
         searchBoxInput = searchBoxInput.trim();
         var temp_searchWord = searchBoxInput.toLowerCase();
 
-		// if special characters get used
+        // if special characters get used
         if ((temp_searchWord.match("^\"") && temp_searchWord.match("\"$")) ||
-        (temp_searchWord.match("^'") && temp_searchWord.match("'$"))) {
-            standard = false;
+           (temp_searchWord.match("^'") && temp_searchWord.match("'$"))) {
+               standard = false;
         }
         var searchWordList = temp_searchWord.split(" ");
 
-		// ignore stop words in search words
+        // ignore stop words in search words
         if (standard) {
             temp_searchWord = "";
             // for each word, check if it is stop word (common word)
@@ -107,7 +106,7 @@ window.onload = function execute(){
                 }
                 // if no stop word, add it to list of search words
                 if (realSearchWord) {
-                  temp_searchWord += " " + searchWordList[i];
+                    temp_searchWord += " " + searchWordList[i];
                 }
             }
             temp_searchWord = temp_searchWord.trim();
@@ -124,10 +123,10 @@ window.onload = function execute(){
                 // text of current wikitext
                 var pageContentString = tipuesearch.pages[i].text;
 
-	            // call of search algorithm
+                // call of search algorithm
                 score = tipue_KMP(searchWordList, pageContentString, set, i);
 
-				// if the page contains search words, save the title etc
+                // if the page contains search words, save the title etc
                 if (score != 0) {
                     found.push({
                         "score": score,
@@ -143,14 +142,14 @@ window.onload = function execute(){
 
             // building up the web-page that shows the search results
             if (resultCounter != 0) {
-            	// TODO: number does not get updated in demo if a second word with different number gets searched.
-            	// add number of search results to tab-name
+                // TODO: number does not get updated in demo if a second word with different number gets searched.
+                // add number of search results to tab-name
                 if (set.showTitleCount && tabTitleFlag) {
                     var title = document.title;
                     document.title = "(" + resultCounter + ") " + title;
                     tabTitleFlag = false;
                 }
-				// "X results found" output line
+                // "X results found" output line
                 if (resultCounter == 1) {
                     out += "<div id='tipue_search_results_count'>1 result";
                 } else {
@@ -164,7 +163,7 @@ window.onload = function execute(){
                 }
                 out += "</div>";
 
-				// sorts "found"-array by score
+                // sorts "found"-array by score
                 found.sort(function(a, b) {
                     return b.score - a.score
                 });
@@ -172,7 +171,7 @@ window.onload = function execute(){
                 // add output for each found page
                 for (var i = 0; i < found.length; i++) {
                     out += "<div class='tipue_search_result'>";
-					out += "<div class='tipue_search_content_title'><a href='" + found[i].url + "'>" + found[i].title + "</a></div>";
+                    out += "<div class='tipue_search_content_title'><a href='" + found[i].url + "'>" + found[i].title + "</a></div>";
                     if (set.debug) {
                         out += "<div class='tipue_search_content_debug'>Score: " + found[i].score + "</div>";
                     }
@@ -242,7 +241,7 @@ window.onload = function execute(){
     }
 
     // -------------------- SEARCH ALGORITHM ------------------------
-    function KMP_prefix(pattern, pattern_len){
+    function KMP_prefix(pattern, pattern_len) {
         // length of found prefix
         var prefix_len = -1;
 
@@ -250,28 +249,27 @@ window.onload = function execute(){
         var prefix_table = [];
         prefix_table.push(prefix_len);
 
-        for (var position_in_pattern = 0; position_in_pattern < pattern_len; position_in_pattern++){
-        // if prefix is too long, shorten it
-        while (prefix_len >= 0 && pattern[prefix_len] !== pattern[position_in_pattern]){
-            prefix_len = prefix_table[prefix_len];
-        }
+        for (var position_in_pattern = 0; position_in_pattern < pattern_len; position_in_pattern++) {
+            // if prefix is too long, shorten it
+            while (prefix_len >= 0 && pattern[prefix_len] !== pattern[position_in_pattern]) {
+                prefix_len = prefix_table[prefix_len];
+            }
 
-        // at this point prefix_len == -1 or pattern[position_in_pattern] == pattern[prefix_len]
-        prefix_len = prefix_len + 1;
-        prefix_table.push(prefix_len);
+            // at this point prefix_len == -1 or pattern[position_in_pattern] == pattern[prefix_len]
+            prefix_len = prefix_len + 1;
+            prefix_table.push(prefix_len);
         }
         return prefix_table;
     }
-
 
     function KMP_search(pattern, prefix_table, text){
         var position_in_pattern = 0;
         var cnt = 0;
         var pattern_len = pattern.length;
 
-        for (var position_in_text = 0; position_in_text < text.length; position_in_text++){
+        for (var position_in_text = 0; position_in_text < text.length; position_in_text++) {
             // move pattern until text and pattern match
-            while (position_in_pattern >= 0 && text[position_in_text].toLowerCase() !== pattern[position_in_pattern].toLowerCase()){
+            while (position_in_pattern >= 0 && text[position_in_text].toLowerCase() !== pattern[position_in_pattern].toLowerCase()) {
                 // use prefix-table
                 position_in_pattern = prefix_table[position_in_pattern];
             }
@@ -279,7 +277,7 @@ window.onload = function execute(){
             position_in_pattern = position_in_pattern + 1
 
             // in case end of pattern is reached
-            if (position_in_pattern === pattern_len){
+            if (position_in_pattern === pattern_len) {
                 // register match
                 //console.log("Match at position "+ (position_in_text - pattern_len).toString() +".");
                 cnt++;
@@ -290,42 +288,42 @@ window.onload = function execute(){
         return cnt;
     }
 
-    function tipue_KMP(searchWordList, s_text, set, i){
+    function tipue_KMP(searchWordList, s_text, set, i) {
         var score = 0;
-        for(var f = 0; f < searchWordList.length; f++){
+        for (var f = 0; f < searchWordList.length; f++) {
             var pre_tab = KMP_prefix(searchWordList[f], searchWordList[f].length);
             var match_cnt = KMP_search(searchWordList[f], pre_tab, tipuesearch.pages[i].title);
-            if(match_cnt != 0){
+            if (match_cnt != 0) {
                 score += (20 * match_cnt);
             }
             match_cnt = KMP_search(searchWordList[f], pre_tab, s_text);
-            if(match_cnt != 0){
+            if (match_cnt != 0) {
                 score += (20 * match_cnt);
             }
 
-            if(tipuesearch.pages[i].tags){
+            if (tipuesearch.pages[i].tags) {
                 match_cnt = KMP_search(searchWordList[f], pre_tab, tipuesearch.pages[i].tags);
-                if(match_cnt != 0){
+                if (match_cnt != 0) {
                     score += (10 * match_cnt);
                 }
             }
             match_cnt = KMP_search(searchWordList[f], pre_tab, tipuesearch.pages[i].url);
-            if(match_cnt != 0){
+            if (match_cnt != 0) {
                 score += 20;
             }
-            if(score != 0){
-                for(var e = 0; e < tipuesearch_weight.weight.length; e++){
-                    if(tipuesearch.pages[i].url == tipuesearch_weight.weight[e].url){
+            if (score != 0) {
+                for (var e = 0; e < tipuesearch_weight.weight.length; e++) {
+                    if (tipuesearch.pages[i].url == tipuesearch_weight.weight[e].url) {
                         score += tipuesearch_weight.weight[e].score;
                     }
                 }
             }
-            if(searchWordList[f].match("^-")){
+            if (searchWordList[f].match("^-")) {
                 pat=new RegExp(searchWordList[f].substring(1),"i");
-                if(KMP_search(searchWordList[f], pre_tab, tipuesearch.pages[i].title) != 0 ||
-                   KMP_search(searchWordList[f], pre_tab, s_text) != 0 ||
-                   KMP_search(searchWordList[f], pre_tab, tipuesearch.pages[i].tags)!=0){
-                    score=0;
+                if (KMP_search(searchWordList[f], pre_tab, tipuesearch.pages[i].title) != 0 ||
+                    KMP_search(searchWordList[f], pre_tab, s_text) != 0 ||
+                    KMP_search(searchWordList[f], pre_tab, tipuesearch.pages[i].tags)!=0) {
+                        score=0;
                 }
             }
         }
