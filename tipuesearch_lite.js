@@ -96,17 +96,10 @@ window.onload = function execute(){
             temp_searchWord = "";
             // for each word, check if it is stop word (common word)
             for (var i = 0; i < searchWordList.length; i++) {
-                var realSearchWord = true;
-                for (var f = 0; f < tipuesearch_stop_words.length; f++) {
-                    if (searchWordList[i] == tipuesearch_stop_words[f]) {
-                        realSearchWord = false;
-                        // saves if any stop word was found at some point
-                        stopWordsFoundFlag = true;
-                    }
-                }
-                // if no stop word, add it to list of search words
-                if (realSearchWord) {
+                if (tipuesearch_stop_words.indexOf(searchWordList[i]) == -1) {
                     temp_searchWord += " " + searchWordList[i];
+                } else {
+                    stopWordsFoundFlag = true;
                 }
             }
             temp_searchWord = temp_searchWord.trim();
