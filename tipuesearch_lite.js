@@ -29,9 +29,7 @@ window.onload = function execute(){
         "showURL": false
     };
 
-    // remember if title gets set (to modify tab-name just once)
-    var tabTitleFlag = true
-
+    var originalTitle = document.title;
     let params = new URLSearchParams(document.location.search.substring(1));
 
     // read search box, call search
@@ -132,12 +130,8 @@ window.onload = function execute(){
 
             // building up the web-page that shows the search results
             if (resultCounter != 0) {
-                // TODO: number does not get updated in demo if a second word with different number gets searched.
-                // add number of search results to tab-name
-                if (set.showTitleCount && tabTitleFlag) {
-                    var title = document.title;
-                    document.title = "(" + resultCounter + ") " + title;
-                    tabTitleFlag = false;
+                if (set.showTitleCount) {
+                    document.title = "(" + resultCounter + ") " + originalTitle;
                 }
                 // "X results found" output line
                 if (resultCounter == 1) {
