@@ -20,16 +20,13 @@ window.onload = function execute(){
         "contextBuffer": 60,
         "contextLength": 60,
         "contextStart": 90,
-        "debug": false,
         "descriptiveWords": 25,
         "highlightTerms": true,
         "minimumLength": 3,
-        "newWindow": false,
         "showContext": true,
         "showTime": true,
         "showTitleCount": true,
-        "showURL": false,
-        "wholeWords": true
+        "showURL": false
     };
 
     // remember if title gets set (to modify tab-name just once)
@@ -165,9 +162,6 @@ window.onload = function execute(){
                 for (var i = 0; i < found.length; i++) {
                     out += "<div class='tipue_search_result'>";
                     out += "<div class='tipue_search_content_title'><a href='" + found[i].url + "'>" + found[i].title + "</a></div>";
-                    if (set.debug) {
-                        out += "<div class='tipue_search_content_debug'>Score: " + found[i].score + "</div>";
-                    }
                     if (set.showURL) {
                         out += "<div class='tipue_search_content_url'><a href='" + found[i].url + "'>" + found[i].url + "</a></div>";
                     }
