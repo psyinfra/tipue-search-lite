@@ -68,8 +68,6 @@ window.onload = function execute(){
         var stopWordsFoundFlag = false;
         // flag if special characters are used
         var standard = true;
-        // counts amount of results/pages found
-        var resultCounter = 0;
         // found saves objects about pages that are found
         var found = [];
 
@@ -123,21 +121,18 @@ window.onload = function execute(){
                         "url": tipuesearch.pages[i].url,
                         "note": tipuesearch.pages[i].note
                     });
-                    // counts findings
-                    resultCounter++;
                 }
             }
 
-            // building up the web-page that shows the search results
-            if (resultCounter != 0) {
+            // build search results HTML
+            if (found.length != 0) {
                 if (set.showTitleCount) {
-                    document.title = "(" + resultCounter + ") " + originalTitle;
+                    document.title = "(" + found.length + ") " + originalTitle;
                 }
-                // "X results found" output line
-                if (resultCounter == 1) {
+                if (found.length == 1) {
                     out += "<div id='tipue_search_results_count'>1 result";
                 } else {
-                    out += "<div id='tipue_search_results_count'>" + resultCounter.toString() + " results";
+                    out += "<div id='tipue_search_results_count'>" + found.length + " results";
                 }
                 // display search time
                 if (set.showTime) {
