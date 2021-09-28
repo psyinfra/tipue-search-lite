@@ -32,13 +32,13 @@ window.onload = function execute(){
     var originalTitle = document.title;
     let params = new URLSearchParams(document.location.search.substring(1));
 
-    // read search box, call search
+    // call search (if opened as a link)
     if (params.get("q")) {
         document.getElementById("tipue_search_input").value = params.get("q");
         getTipueSearch();
     }
 
-    // add to history
+    // call search via search-box
     document.getElementById('tipue_search_input').form.onsubmit = function() {
         getTipueSearch();
 
@@ -59,25 +59,21 @@ window.onload = function execute(){
     }
 
     function getTipueSearch() {
-        // Timer for showTime
         var startTimer = new Date().getTime();
-        // string for html output
-
         var out = "";
         // inform if just common words like "and" are used in search (they are ignored)
         var stopWordsFoundFlag = false;
         // flag if special characters are used
         var standard = true;
-        // found saves objects about pages that are found
+        // save objects about pages that are found
         var found = [];
-
         // get and modify search word
         var searchBoxInput = document.getElementById("tipue_search_input").value;
         searchBoxInput = searchBoxInput.replace(/\+/g, " ").replace(/\s\s+/g, " ");
         searchBoxInput = searchBoxInput.trim();
         var temp_searchWord = searchBoxInput.toLowerCase();
 
-        // if special characters get used
+        // check for special characters
         if ((temp_searchWord.match("^\"") && temp_searchWord.match("\"$")) ||
            (temp_searchWord.match("^'") && temp_searchWord.match("'$"))) {
                standard = false;
@@ -101,12 +97,12 @@ window.onload = function execute(){
         }
         searchWordList = temp_searchWord.split(" ");
 
-        // do actual "search" if the search word list is long enough
+        // actual "search" if the search word list is long enough
         if (temp_searchWord.length >= set.minimumLength) {
             // loop over pages and search in text
             for (var i = 0; i < tipuesearch.pages.length; i++) {
                 var score = 0;
-                // text of current wikitext
+                // text of current page
                 var pageContentString = tipuesearch.pages[i].text;
 
                 // call of search algorithm
@@ -142,7 +138,6 @@ window.onload = function execute(){
                 }
                 out += "</div>";
 
-                // sorts "found"-array by score
                 found.sort(function(a, b) {
                     return b.score - a.score
                 });
