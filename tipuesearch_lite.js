@@ -63,8 +63,6 @@ window.onload = function execute(){
         var out = "";
         // inform if just common words like "and" are used in search (they are ignored)
         var stopWordsFoundFlag = false;
-        // flag if special characters are used
-        var standard = true;
         // save objects about pages that are found
         var found = [];
         // get and modify search word
@@ -72,29 +70,19 @@ window.onload = function execute(){
         searchBoxInput = searchBoxInput.replace(/\+/g, " ").replace(/\s\s+/g, " ");
         searchBoxInput = searchBoxInput.trim();
         var temp_searchWord = searchBoxInput.toLowerCase();
-
-        // check for special characters
-        if ((temp_searchWord.match("^\"") && temp_searchWord.match("\"$")) ||
-           (temp_searchWord.match("^'") && temp_searchWord.match("'$"))) {
-               standard = false;
-        }
         var searchWordList = temp_searchWord.split(" ");
 
         // ignore stop words in search words
-        if (standard) {
-            temp_searchWord = "";
-            // for each word, check if it is stop word (common word)
-            for (var i = 0; i < searchWordList.length; i++) {
-                if (tipuesearch_stop_words.indexOf(searchWordList[i]) == -1) {
-                    temp_searchWord += " " + searchWordList[i];
-                } else {
-                    stopWordsFoundFlag = true;
-                }
+        temp_searchWord = "";
+        // for each word, check if it is stop word (common word)
+        for (var i = 0; i < searchWordList.length; i++) {
+            if (tipuesearch_stop_words.indexOf(searchWordList[i]) == -1) {
+                temp_searchWord += " " + searchWordList[i];
+            } else {
+                stopWordsFoundFlag = true;
             }
-            temp_searchWord = temp_searchWord.trim();
-        } else {
-            temp_searchWord = temp_searchWord.substring(1, temp_searchWord.length - 1);
         }
+        temp_searchWord = temp_searchWord.trim();
         searchWordList = temp_searchWord.split(" ");
 
         // actual "search" if the search word list is long enough
@@ -164,16 +152,11 @@ window.onload = function execute(){
                                 }
                             }
                         }
-                        if (standard) {
-                            for (var f = 0; f < searchWordList.length; f++) {
-                                if (set.highlightTerms) {
-                                    var patr = new RegExp("(" + searchWordList[f] + ")", "gi");
-                                    t = t.replace(patr, "<h0011>$1<h0012>");
-                                }
+                        for (var f = 0; f < searchWordList.length; f++) {
+                            if (set.highlightTerms) {
+                                var patr = new RegExp("(" + searchWordList[f] + ")", "gi");
+                                t = t.replace(patr, "<h0011>$1<h0012>");
                             }
-                        } else if (set.highlightTerms) {
-                            var patr = new RegExp("(" + temp_searchWord + ")", "gi");
-                            t = t.replace(patr, "<span class=\"tipue_search_content_bold\">$1</span>");
                         }
                         var t_d = "";
                         var t_w = t.split(" ");
