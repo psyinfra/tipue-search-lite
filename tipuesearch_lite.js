@@ -66,14 +66,14 @@ window.onload = function execute(){
         // save objects about pages that are found
         var found = [];
         // get and modify search word
-        var searchBoxInput = document.getElementById("tipue_search_input").value;
-        searchBoxInput = searchBoxInput.replace(/\+/g, " ").replace(/\s\s+/g, " ");
-        searchBoxInput = searchBoxInput.trim();
-        var temp_searchWord = searchBoxInput.toLowerCase();
-        var searchWordList = temp_searchWord.split(" ");
+        var searchWordList = document.getElementById("tipue_search_input").value;
+        searchWordList = searchWordList.replace(/\+/g, " ").replace(/\s\s+/g, " ");
+        searchWordList = searchWordList.trim();
+        searchWordList = searchWordList.toLowerCase();
+        searchWordList = searchWordList.split(" ");
 
         // ignore stop words in search words
-        temp_searchWord = "";
+        var temp_searchWord = "";
         // for each word, check if it is stop word (common word)
         for (var i = 0; i < searchWordList.length; i++) {
             if (tipuesearch_stop_words.indexOf(searchWordList[i]) == -1) {
