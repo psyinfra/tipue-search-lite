@@ -90,8 +90,6 @@ window.onload = function execute(){
     function getTipueSearch() {
         var startTimer = new Date().getTime();
         var out = "";
-        // inform if just common words like "and" are used in search (they are ignored)
-        var stopWordsFoundFlag = false;
         // save objects about pages that are found
         var found = [];
         // get and modify search words
@@ -101,15 +99,17 @@ window.onload = function execute(){
 
         // ignore stop words in search words
         var temp_searchWord = [];
+        var commonWordsFound = [];
         // for each word, check if it is stop word (common word)
         for (var i = 0; i < searchWordList.length; i++) {
             if (tipuesearch_stop_words.indexOf(searchWordList[i]) == -1) {
                 temp_searchWord.push(searchWordList[i]);
             } else {
-                stopWordsFoundFlag = true;
+                commonWordsFound.push(searchWordList[i]);
             }
         }
         searchWordList = temp_searchWord;
+
         // actual "search" if the search word list is long enough
         if (searchWordList.join().length >= set.minimumLength) {
             // loop over pages and search in text
@@ -209,8 +209,8 @@ window.onload = function execute(){
                 out += "<div id='tipue_search_error'>Nothing found.</div>";
             }
         } else {
-            if (stopWordsFoundFlag) { // for example if search is just "yourself"
-                out += "<div id='tipue_search_error'>Nothing found. Common words are largely ignored.</div>";
+            if (commonWordsFound.length > 0) {
+                out += "<div id='tipue_search_error'>Common words \"" + commonWordsFound.join(", ") + "\" got ignored.</div>";
             } else {
                 out += "<div id='tipue_search_error'>Search should be " + set.minimumLength + " or more characters.</div>";
             }
