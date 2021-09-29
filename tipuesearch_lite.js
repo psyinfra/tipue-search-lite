@@ -4,11 +4,11 @@ Copyright (c) 2019 Tipue
 Tipue Search Lite is released under the MIT License
 */
 
-//Stop words list from http://www.ranks.nl/stopwords
-var tipuesearch_stop_words = ["a", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't", "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"];
+// list from http://www.ranks.nl/stopwords
+var commonWords = ["a", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't", "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"];
 
 // Weighting for tipue KMP algorithm
-var tipuesearch_weight = {'weight': [
+var tipuesearchWeight = {'weight': [
     {'url': 'http://www.tipue.com', 'score': 60},
     {'url': 'http://www.tipue.com/search', 'score': 60},
     {'url': 'http://www.tipue.com/tipr', 'score': 30},
@@ -16,7 +16,7 @@ var tipuesearch_weight = {'weight': [
 ]};
 
 
-function parse_searchWords(searchWord) {
+function parseSearchWords(searchWord) {
     var searchWordList = [];
     while (searchWord.length > 0) {
         searchWord = searchWord.trim();
@@ -71,19 +71,19 @@ window.onload = function execute(){
     document.getElementById('tipue_search_input').form.onsubmit = function() {
         getTipueSearch();
 
-        var history_url = '';
-        var history_title = '';
+        var historyUrl = '';
+        var historyTitle = '';
 
         var term = document.getElementById("tipue_search_input").value;
         if (!term || term.length === 0) {
-            history_url = location.href.split('?')[0];
+            historyUrl = location.href.split('?')[0];
         } else {
-            history_url = history_url + '?q=' + term;
-            history_title = 'Search - ' + term;
+            historyUrl = historyUrl + '?q=' + term;
+            historyTitle = 'Search - ' + term;
         }
 
         // add to address bar and history
-        history.pushState({}, history_title, history_url);
+        history.pushState({}, historyTitle, historyUrl);
         return false;
     }
 
@@ -95,20 +95,19 @@ window.onload = function execute(){
         // get and modify search words
         var searchWordList = document.getElementById("tipue_search_input").value;
         searchWordList = searchWordList.replace(/\+/g, " ").replace(/\s\s+/g, " ");
-        searchWordList = parse_searchWords(searchWordList.toLowerCase());
+        searchWordList = parseSearchWords(searchWordList.toLowerCase());
 
-        // ignore stop words in search words
-        var temp_searchWord = [];
+        // ignore common words in search
+        var tempSearchWord = [];
         var commonWordsFound = [];
-        // for each word, check if it is stop word (common word)
         for (var i = 0; i < searchWordList.length; i++) {
-            if (tipuesearch_stop_words.indexOf(searchWordList[i]) == -1) {
-                temp_searchWord.push(searchWordList[i]);
+            if (commonWords.indexOf(searchWordList[i]) == -1) {
+                tempSearchWord.push(searchWordList[i]);
             } else {
                 commonWordsFound.push(searchWordList[i]);
             }
         }
-        searchWordList = temp_searchWord;
+        searchWordList = tempSearchWord;
 
         // actual "search" if the search word list is long enough
         if (searchWordList.join().length >= set.minimumLength) {
@@ -291,9 +290,9 @@ window.onload = function execute(){
                 score += 20;
             }
             if (score != 0) {
-                for (var e = 0; e < tipuesearch_weight.weight.length; e++) {
-                    if (tipuesearch.pages[i].url == tipuesearch_weight.weight[e].url) {
-                        score += tipuesearch_weight.weight[e].score;
+                for (var e = 0; e < tipuesearchWeight.weight.length; e++) {
+                    if (tipuesearch.pages[i].url == tipuesearchWeight.weight[e].url) {
+                        score += tipuesearchWeight.weight[e].score;
                     }
                 }
             }
