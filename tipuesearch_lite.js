@@ -15,6 +15,35 @@ var tipuesearch_weight = {'weight': [
     {'url': 'http://www.tipue.com/support', 'score': 20}
 ]};
 
+
+function parse_searchWords(searchWord) {
+    var searchWordList = [];
+    while (searchWord.length > 0) {
+        searchWord = searchWord.trim();
+        if (searchWord.charAt(0) == '"' && searchWord.indexOf('"', 1) != -1) {
+            end = searchWord.indexOf('"', 1);
+            searchWordList.push(searchWord.slice(1, end));
+            searchWord = searchWord.slice(end + 1)
+        } else if (searchWord.charAt(0) == "'" && searchWord.indexOf("'", 1) != -1) {
+            end = searchWord.indexOf("'", 1);
+            searchWordList.push(searchWord.slice(1, end));
+            searchWord = searchWord.slice(end + 1)
+        } else if (searchWord.indexOf(" ", 1) != -1) {
+            end = searchWord.indexOf(" ", 1);
+            searchWordList.push(searchWord.slice(0, end));
+            searchWord = searchWord.slice(end + 1)
+        } else {
+            searchWordList.push(searchWord);
+            searchWord = '';
+        }
+    }
+    while (searchWordList.indexOf("") != -1) {
+        searchWordList.splice(searchWordList.indexOf(""), 1);
+    }
+    return searchWordList;
+}
+
+
 window.onload = function execute(){
     var set = {
         "contextBuffer": 60,
@@ -65,28 +94,24 @@ window.onload = function execute(){
         var stopWordsFoundFlag = false;
         // save objects about pages that are found
         var found = [];
-        // get and modify search word
+        // get and modify search words
         var searchWordList = document.getElementById("tipue_search_input").value;
         searchWordList = searchWordList.replace(/\+/g, " ").replace(/\s\s+/g, " ");
-        searchWordList = searchWordList.trim();
-        searchWordList = searchWordList.toLowerCase();
-        searchWordList = searchWordList.split(" ");
+        searchWordList = parse_searchWords(searchWordList.toLowerCase());
 
         // ignore stop words in search words
-        var temp_searchWord = "";
+        var temp_searchWord = [];
         // for each word, check if it is stop word (common word)
         for (var i = 0; i < searchWordList.length; i++) {
             if (tipuesearch_stop_words.indexOf(searchWordList[i]) == -1) {
-                temp_searchWord += " " + searchWordList[i];
+                temp_searchWord.push(searchWordList[i]);
             } else {
                 stopWordsFoundFlag = true;
             }
         }
-        temp_searchWord = temp_searchWord.trim();
-        searchWordList = temp_searchWord.split(" ");
-
+        searchWordList = temp_searchWord;
         // actual "search" if the search word list is long enough
-        if (temp_searchWord.length >= set.minimumLength) {
+        if (searchWordList.join().length >= set.minimumLength) {
             // loop over pages and search in text
             for (var i = 0; i < tipuesearch.pages.length; i++) {
                 var score = 0;
