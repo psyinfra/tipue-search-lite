@@ -110,7 +110,7 @@ window.onload = function execute(){
         searchWordList = tempSearchWord;
 
         // actual "search" if the search word list is long enough
-        if (searchWordList.join().length >= set.minimumLength) {
+        if (searchWordList.join().length + commonWordsFound.join().length >= set.minimumLength) {
             // loop over pages and search in text
             for (var i = 0; i < tipuesearch.pages.length; i++) {
                 var score = 0;
@@ -133,23 +133,25 @@ window.onload = function execute(){
             }
 
             // build search results HTML
+            if (set.showTitleCount) {
+                document.title = "(" + found.length + ") " + originalTitle;
+            }
+            if (found.length == 1) {
+                out += "<div id='tipue_search_results_count'>1 result";
+            } else {
+                out += "<div id='tipue_search_results_count'>" + found.length + " results";
+            }
+            // display search time
+            if (set.showTime) {
+                var endTimer = new Date().getTime();
+                var time = (endTimer - startTimer) / 1000;
+                out += " (" + time.toFixed(2) + " seconds)";
+            }
+            out += "</div>";
+            if (commonWordsFound.length > 0) {
+                out += "<div id='tipue_ignored_words'>Common words \"" + commonWordsFound.join(", ") + "\" got ignored.</div>";
+            }
             if (found.length != 0) {
-                if (set.showTitleCount) {
-                    document.title = "(" + found.length + ") " + originalTitle;
-                }
-                if (found.length == 1) {
-                    out += "<div id='tipue_search_results_count'>1 result";
-                } else {
-                    out += "<div id='tipue_search_results_count'>" + found.length + " results";
-                }
-                // display search time
-                if (set.showTime) {
-                    var endTimer = new Date().getTime();
-                    var time = (endTimer - startTimer) / 1000;
-                    out += " (" + time.toFixed(2) + " seconds)";
-                }
-                out += "</div>";
-
                 found.sort(function(a, b) {
                     return b.score - a.score
                 });
@@ -208,11 +210,7 @@ window.onload = function execute(){
                 out += "<div id='tipue_search_error'>Nothing found.</div>";
             }
         } else {
-            if (commonWordsFound.length > 0) {
-                out += "<div id='tipue_search_error'>Common words \"" + commonWordsFound.join(", ") + "\" got ignored.</div>";
-            } else {
-                out += "<div id='tipue_search_error'>Search should be " + set.minimumLength + " or more characters.</div>";
-            }
+            out += "<div id='tipue_search_error'>Search should be " + set.minimumLength + " or more characters.</div>";
         }
         // give the page the actual contents, which were build up
         document.getElementById("tipue_search_content").innerHTML = out;
