@@ -5,7 +5,7 @@ Tipue Search Lite is released under the MIT License
 */
 
 // list from http://www.ranks.nl/stopwords
-var commonWords = ["a", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't", "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"];
+var commonWordList = ["a", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't", "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"];
 
 // Weighting for tipue KMP algorithm
 var tipuesearchWeight = {'weight': [
@@ -18,7 +18,6 @@ var tipuesearchWeight = {'weight': [
 
 function parseSearchWords(searchWord) {
     searchWord = searchWord.replace(/\+/g, " ").replace(/\s\s+/g, " ");
-
     var searchWordList = [];
     while (searchWord.length > 0) {
         searchWord = searchWord.trim();
@@ -98,19 +97,19 @@ window.onload = function execute(){
         var searchWordList = parseSearchWords(document.getElementById("tipue_search_input").value);
 
         // ignore common words in search
-        var tempSearchWord = [];
-        var commonWordsFound = [];
+        var tempSearchWordList = [];
+        var commonWordsFoundList = [];
         for (var i = 0; i < searchWordList.length; i++) {
-            if (commonWords.indexOf(searchWordList[i].toLowerCase()) == -1) {
-                tempSearchWord.push(searchWordList[i]);
+            if (commonWordList.indexOf(searchWordList[i].toLowerCase()) == -1) {
+                tempSearchWordList.push(searchWordList[i]);
             } else {
-                commonWordsFound.push(searchWordList[i]);
+                commonWordsFoundList.push(searchWordList[i]);
             }
         }
-        searchWordList = tempSearchWord;
+        searchWordList = tempSearchWordList;
 
         // actual "search" if the search word list is long enough
-        if (searchWordList.join().length + commonWordsFound.join().length >= set.minimumLength) {
+        if (searchWordList.join().length + commonWordsFoundList.join().length >= set.minimumLength) {
             // loop over pages and search in text
             for (var i = 0; i < tipuesearch.pages.length; i++) {
                 var score = 0;
@@ -148,8 +147,8 @@ window.onload = function execute(){
                 out += " (" + time.toFixed(2) + " seconds)";
             }
             out += "</div>";
-            if (commonWordsFound.length > 0) {
-                out += "<div id='tipue_ignored_words'>Common words \"" + commonWordsFound.join(", ") + "\" got ignored.</div>";
+            if (commonWordsFoundList.length > 0) {
+                out += "<div id='tipue_ignored_words'>Common words \"" + commonWordsFoundList.join(", ") + "\" got ignored.</div>";
             }
             if (found.length != 0) {
                 found.sort(function(a, b) {
