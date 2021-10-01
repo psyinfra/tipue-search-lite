@@ -15,35 +15,6 @@ var tipuesearchWeight = {'weight': [
     {'url': 'http://www.tipue.com/support', 'score': 20}
 ]};
 
-
-function parseSearchWords(searchWord) {
-    var searchWordList = [];
-    while (searchWord.length > 0) {
-        searchWord = searchWord.trim();
-        if (searchWord.charAt(0) == '"' && searchWord.indexOf('"', 1) != -1) {
-            end = searchWord.indexOf('"', 1);
-            searchWordList.push(searchWord.slice(1, end));
-            searchWord = searchWord.slice(end + 1)
-        } else if (searchWord.charAt(0) == "'" && searchWord.indexOf("'", 1) != -1) {
-            end = searchWord.indexOf("'", 1);
-            searchWordList.push(searchWord.slice(1, end));
-            searchWord = searchWord.slice(end + 1)
-        } else if (searchWord.indexOf(" ", 1) != -1) {
-            end = searchWord.indexOf(" ", 1);
-            searchWordList.push(searchWord.slice(0, end));
-            searchWord = searchWord.slice(end + 1)
-        } else {
-            searchWordList.push(searchWord);
-            searchWord = '';
-        }
-    }
-    while (searchWordList.indexOf("") != -1) {
-        searchWordList.splice(searchWordList.indexOf(""), 1);
-    }
-    return searchWordList;
-}
-
-
 window.onload = function execute(){
     var set = {
         "contextBuffer": 60,
@@ -212,6 +183,33 @@ window.onload = function execute(){
         }
         // give the page the actual contents, which were build up
         document.getElementById("tipue_search_content").innerHTML = out;
+    }
+
+    function parseSearchWords(searchWord) {
+        var searchWordList = [];
+        while (searchWord.length > 0) {
+            searchWord = searchWord.trim();
+            if (searchWord.charAt(0) == '"' && searchWord.indexOf('"', 1) != -1) {
+                end = searchWord.indexOf('"', 1);
+                searchWordList.push(searchWord.slice(1, end));
+                searchWord = searchWord.slice(end + 1)
+            } else if (searchWord.charAt(0) == "'" && searchWord.indexOf("'", 1) != -1) {
+                end = searchWord.indexOf("'", 1);
+                searchWordList.push(searchWord.slice(1, end));
+                searchWord = searchWord.slice(end + 1)
+            } else if (searchWord.indexOf(" ", 1) != -1) {
+                end = searchWord.indexOf(" ", 1);
+                searchWordList.push(searchWord.slice(0, end));
+                searchWord = searchWord.slice(end + 1)
+            } else {
+                searchWordList.push(searchWord);
+                searchWord = '';
+            }
+        }
+        while (searchWordList.indexOf("") != -1) {
+            searchWordList.splice(searchWordList.indexOf(""), 1);
+        }
+        return searchWordList;
     }
 
     // -------------------- SEARCH ALGORITHM ------------------------
