@@ -162,14 +162,13 @@ window.onload = function execute(){
 
         for (var i = 0; i < tipueIndex.pages.length; i++) {
             var score = 0;
-            var pageText = tipueIndex.pages[i].text;
-            score = tipue_KMP(searchWordList, pageText, set, i);
+            score = tipue_KMP(searchWordList, tipueIndex.pages[i]);
 
             if (score != 0) {
                 results.push({
                     "score": score,
                     "title": tipueIndex.pages[i].title,
-                    "desc": pageText,
+                    "desc": tipueIndex.pages[i].text,
                     "url": tipueIndex.pages[i].url,
                     "note": tipueIndex.pages[i].note
                 });
@@ -255,42 +254,42 @@ window.onload = function execute(){
         return cnt;
     }
 
-    function tipue_KMP(searchWordList, s_text, set, i) {
+    function tipue_KMP(searchWordList, page) {
         var score = 0;
         for (var f = 0; f < searchWordList.length; f++) {
             var searchWord = searchWordList[f].toLowerCase();
             var pre_tab = KMP_prefix(searchWord, searchWord.length);
-            var match_cnt = KMP_search(searchWord, pre_tab, tipuesearch.pages[i].title);
+            var match_cnt = KMP_search(searchWord, pre_tab, page.title);
             if (match_cnt != 0) {
                 score += (20 * match_cnt);
             }
-            match_cnt = KMP_search(searchWord, pre_tab, s_text);
+            match_cnt = KMP_search(searchWord, pre_tab, page.text);
             if (match_cnt != 0) {
                 score += (20 * match_cnt);
             }
 
-            if (tipuesearch.pages[i].tags) {
-                match_cnt = KMP_search(searchWord, pre_tab, tipuesearch.pages[i].tags);
+            if (page.tags) {
+                match_cnt = KMP_search(searchWord, pre_tab, page.tags);
                 if (match_cnt != 0) {
                     score += (10 * match_cnt);
                 }
             }
-            match_cnt = KMP_search(searchWord, pre_tab, tipuesearch.pages[i].url);
+            match_cnt = KMP_search(searchWord, pre_tab, page.url);
             if (match_cnt != 0) {
                 score += 20;
             }
             if (score != 0) {
                 for (var e = 0; e < tipuesearchWeight.weight.length; e++) {
-                    if (tipuesearch.pages[i].url == tipuesearchWeight.weight[e].url) {
+                    if (page.url == tipuesearchWeight.weight[e].url) {
                         score += tipuesearchWeight.weight[e].score;
                     }
                 }
             }
             if (searchWord.match("^-")) {
                 pat=new RegExp(searchWord.substring(1),"i");
-                if (KMP_search(searchWord, pre_tab, tipuesearch.pages[i].title) != 0 ||
-                    KMP_search(searchWord, pre_tab, s_text) != 0 ||
-                    KMP_search(searchWord, pre_tab, tipuesearch.pages[i].tags)!=0) {
+                if (KMP_search(searchWord, pre_tab, page.title) != 0 ||
+                    KMP_search(searchWord, pre_tab, page.text) != 0 ||
+                    KMP_search(searchWord, pre_tab, page.tags)!=0) {
                         score=0;
                 }
             }
