@@ -79,26 +79,7 @@ window.onload = function execute(){
 
         // actual "search" if the search word list is long enough
         if (searchWordList.join().length + commonWordsFoundList.join().length >= set.minimumLength) {
-            // loop over pages and search in text
-            for (var i = 0; i < tipuesearch.pages.length; i++) {
-                var score = 0;
-                // text of current page
-                var pageContentString = tipuesearch.pages[i].text;
-
-                // call of search algorithm
-                score = tipue_KMP(searchWordList, pageContentString, set, i);
-
-                // if the page contains search words, save the title etc
-                if (score != 0) {
-                    results.push({
-                        "score": score,
-                        "title": tipuesearch.pages[i].title,
-                        "desc": pageContentString,
-                        "url": tipuesearch.pages[i].url,
-                        "note": tipuesearch.pages[i].note
-                    });
-                }
-            }
+            results = getSearchResults(searchWordList, tipuesearch);
 
             // build search results HTML
             if (set.showTitleCount) {
@@ -119,10 +100,6 @@ window.onload = function execute(){
             if (commonWordsFoundList.length > 0) {
                 resultsHTML += "<div id='tipue_ignored_words'>Common words \"" + commonWordsFoundList.join(", ") + "\" got ignored.</div>";
             }
-
-            results.sort(function(a, b) {
-                return b.score - a.score
-            });
             // build HTML for each result
             for (var i = 0; i < results.length; i++) {
                 resultsHTML += "<div class='tipue_search_result'>";
@@ -178,6 +155,29 @@ window.onload = function execute(){
         }
         // give the page the actual contents, which were build up
         document.getElementById("tipue_search_content").innerHTML = resultsHTML;
+    }
+
+    function getSearchResults(searchWordList, tipueIndex) {
+        var results = [];
+
+        for (var i = 0; i < tipueIndex.pages.length; i++) {
+            var score = 0;
+            var pageText = tipueIndex.pages[i].text;
+            score = tipue_KMP(searchWordList, pageText, set, i);
+
+            if (score != 0) {
+                results.push({
+                    "score": score,
+                    "title": tipueIndex.pages[i].title,
+                    "desc": pageText,
+                    "url": tipueIndex.pages[i].url,
+                    "note": tipueIndex.pages[i].note
+                });
+            }
+        }
+
+        results.sort(function(a, b) { return b.score - a.score });
+        return results;
     }
 
     function parseSearchWords(searchWord) {
