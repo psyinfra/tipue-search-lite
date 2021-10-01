@@ -4,16 +4,46 @@ Copyright (c) 2019 Tipue
 Tipue Search Lite is released under the MIT License
 */
 
-//Stop words list from http://www.ranks.nl/stopwords
-var tipuesearch_stop_words = ["a", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't", "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"];
+// list from http://www.ranks.nl/stopwords
+var commonWordList = ["a", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't", "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"];
 
 // Weighting for tipue KMP algorithm
-var tipuesearch_weight = {'weight': [
+var tipuesearchWeight = {'weight': [
     {'url': 'http://www.tipue.com', 'score': 60},
     {'url': 'http://www.tipue.com/search', 'score': 60},
     {'url': 'http://www.tipue.com/tipr', 'score': 30},
     {'url': 'http://www.tipue.com/support', 'score': 20}
 ]};
+
+
+function parseSearchWords(searchWord) {
+    searchWord = searchWord.replace(/\+/g, " ").replace(/\s\s+/g, " ");
+    var searchWordList = [];
+    while (searchWord.length > 0) {
+        searchWord = searchWord.trim();
+        if (searchWord.charAt(0) == '"' && searchWord.indexOf('"', 1) != -1) {
+            end = searchWord.indexOf('"', 1);
+            searchWordList.push(searchWord.slice(1, end));
+            searchWord = searchWord.slice(end + 1)
+        } else if (searchWord.charAt(0) == "'" && searchWord.indexOf("'", 1) != -1) {
+            end = searchWord.indexOf("'", 1);
+            searchWordList.push(searchWord.slice(1, end));
+            searchWord = searchWord.slice(end + 1)
+        } else if (searchWord.indexOf(" ", 1) != -1) {
+            end = searchWord.indexOf(" ", 1);
+            searchWordList.push(searchWord.slice(0, end));
+            searchWord = searchWord.slice(end + 1)
+        } else {
+            searchWordList.push(searchWord);
+            searchWord = '';
+        }
+    }
+    while (searchWordList.indexOf("") != -1) {
+        searchWordList.splice(searchWordList.indexOf(""), 1);
+    }
+    return searchWordList;
+}
+
 
 window.onload = function execute(){
     var set = {
@@ -42,51 +72,44 @@ window.onload = function execute(){
     document.getElementById('tipue_search_input').form.onsubmit = function() {
         getTipueSearch();
 
-        var history_url = '';
-        var history_title = '';
+        var historyUrl = '';
+        var historyTitle = '';
 
         var term = document.getElementById("tipue_search_input").value;
         if (!term || term.length === 0) {
-            history_url = location.href.split('?')[0];
+            historyUrl = location.href.split('?')[0];
         } else {
-            history_url = history_url + '?q=' + term;
-            history_title = 'Search - ' + term;
+            historyUrl = historyUrl + '?q=' + term;
+            historyTitle = 'Search - ' + term;
         }
 
         // add to address bar and history
-        history.pushState({}, history_title, history_url);
+        history.pushState({}, historyTitle, historyUrl);
         return false;
     }
 
     function getTipueSearch() {
         var startTimer = new Date().getTime();
         var out = "";
-        // inform if just common words like "and" are used in search (they are ignored)
-        var stopWordsFoundFlag = false;
         // save objects about pages that are found
         var found = [];
-        // get and modify search word
-        var searchBoxInput = document.getElementById("tipue_search_input").value;
-        searchBoxInput = searchBoxInput.replace(/\+/g, " ").replace(/\s\s+/g, " ");
-        searchBoxInput = searchBoxInput.trim();
-        var temp_searchWord = searchBoxInput.toLowerCase();
-        var searchWordList = temp_searchWord.split(" ");
+        // get and modify search words
+        var searchWordList = parseSearchWords(document.getElementById("tipue_search_input").value);
 
-        // ignore stop words in search words
-        temp_searchWord = "";
-        // for each word, check if it is stop word (common word)
+        // ignore common words in search
+        var tempSearchWordList = [];
+        var commonWordsFoundList = [];
         for (var i = 0; i < searchWordList.length; i++) {
-            if (tipuesearch_stop_words.indexOf(searchWordList[i]) == -1) {
-                temp_searchWord += " " + searchWordList[i];
+            if (commonWordList.indexOf(searchWordList[i].toLowerCase()) == -1) {
+                tempSearchWordList.push(searchWordList[i]);
             } else {
-                stopWordsFoundFlag = true;
+                commonWordsFoundList.push(searchWordList[i]);
             }
         }
-        temp_searchWord = temp_searchWord.trim();
-        searchWordList = temp_searchWord.split(" ");
+        searchWordList = tempSearchWordList;
 
         // actual "search" if the search word list is long enough
-        if (temp_searchWord.length >= set.minimumLength) {
+        if (searchWordList.join().length + commonWordsFoundList.join().length >= set.minimumLength) {
             // loop over pages and search in text
             for (var i = 0; i < tipuesearch.pages.length; i++) {
                 var score = 0;
@@ -109,23 +132,25 @@ window.onload = function execute(){
             }
 
             // build search results HTML
+            if (set.showTitleCount) {
+                document.title = "(" + found.length + ") " + originalTitle;
+            }
+            if (found.length == 1) {
+                out += "<div id='tipue_search_results_count'>1 result";
+            } else {
+                out += "<div id='tipue_search_results_count'>" + found.length + " results";
+            }
+            // display search time
+            if (set.showTime) {
+                var endTimer = new Date().getTime();
+                var time = (endTimer - startTimer) / 1000;
+                out += " (" + time.toFixed(2) + " seconds)";
+            }
+            out += "</div>";
+            if (commonWordsFoundList.length > 0) {
+                out += "<div id='tipue_ignored_words'>Common words \"" + commonWordsFoundList.join(", ") + "\" got ignored.</div>";
+            }
             if (found.length != 0) {
-                if (set.showTitleCount) {
-                    document.title = "(" + found.length + ") " + originalTitle;
-                }
-                if (found.length == 1) {
-                    out += "<div id='tipue_search_results_count'>1 result";
-                } else {
-                    out += "<div id='tipue_search_results_count'>" + found.length + " results";
-                }
-                // display search time
-                if (set.showTime) {
-                    var endTimer = new Date().getTime();
-                    var time = (endTimer - startTimer) / 1000;
-                    out += " (" + time.toFixed(2) + " seconds)";
-                }
-                out += "</div>";
-
                 found.sort(function(a, b) {
                     return b.score - a.score
                 });
@@ -184,11 +209,7 @@ window.onload = function execute(){
                 out += "<div id='tipue_search_error'>Nothing found.</div>";
             }
         } else {
-            if (stopWordsFoundFlag) { // for example if search is just "yourself"
-                out += "<div id='tipue_search_error'>Nothing found. Common words are largely ignored.</div>";
-            } else {
-                out += "<div id='tipue_search_error'>Search should be " + set.minimumLength + " or more characters.</div>";
-            }
+            out += "<div id='tipue_search_error'>Search should be " + set.minimumLength + " or more characters.</div>";
         }
         // give the page the actual contents, which were build up
         document.getElementById("tipue_search_content").innerHTML = out;
@@ -245,38 +266,39 @@ window.onload = function execute(){
     function tipue_KMP(searchWordList, s_text, set, i) {
         var score = 0;
         for (var f = 0; f < searchWordList.length; f++) {
-            var pre_tab = KMP_prefix(searchWordList[f], searchWordList[f].length);
-            var match_cnt = KMP_search(searchWordList[f], pre_tab, tipuesearch.pages[i].title);
+            var searchWord = searchWordList[f].toLowerCase();
+            var pre_tab = KMP_prefix(searchWord, searchWord.length);
+            var match_cnt = KMP_search(searchWord, pre_tab, tipuesearch.pages[i].title);
             if (match_cnt != 0) {
                 score += (20 * match_cnt);
             }
-            match_cnt = KMP_search(searchWordList[f], pre_tab, s_text);
+            match_cnt = KMP_search(searchWord, pre_tab, s_text);
             if (match_cnt != 0) {
                 score += (20 * match_cnt);
             }
 
             if (tipuesearch.pages[i].tags) {
-                match_cnt = KMP_search(searchWordList[f], pre_tab, tipuesearch.pages[i].tags);
+                match_cnt = KMP_search(searchWord, pre_tab, tipuesearch.pages[i].tags);
                 if (match_cnt != 0) {
                     score += (10 * match_cnt);
                 }
             }
-            match_cnt = KMP_search(searchWordList[f], pre_tab, tipuesearch.pages[i].url);
+            match_cnt = KMP_search(searchWord, pre_tab, tipuesearch.pages[i].url);
             if (match_cnt != 0) {
                 score += 20;
             }
             if (score != 0) {
-                for (var e = 0; e < tipuesearch_weight.weight.length; e++) {
-                    if (tipuesearch.pages[i].url == tipuesearch_weight.weight[e].url) {
-                        score += tipuesearch_weight.weight[e].score;
+                for (var e = 0; e < tipuesearchWeight.weight.length; e++) {
+                    if (tipuesearch.pages[i].url == tipuesearchWeight.weight[e].url) {
+                        score += tipuesearchWeight.weight[e].score;
                     }
                 }
             }
-            if (searchWordList[f].match("^-")) {
-                pat=new RegExp(searchWordList[f].substring(1),"i");
-                if (KMP_search(searchWordList[f], pre_tab, tipuesearch.pages[i].title) != 0 ||
-                    KMP_search(searchWordList[f], pre_tab, s_text) != 0 ||
-                    KMP_search(searchWordList[f], pre_tab, tipuesearch.pages[i].tags)!=0) {
+            if (searchWord.match("^-")) {
+                pat=new RegExp(searchWord.substring(1),"i");
+                if (KMP_search(searchWord, pre_tab, tipuesearch.pages[i].title) != 0 ||
+                    KMP_search(searchWord, pre_tab, s_text) != 0 ||
+                    KMP_search(searchWord, pre_tab, tipuesearch.pages[i].tags)!=0) {
                         score=0;
                 }
             }
