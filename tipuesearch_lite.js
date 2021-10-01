@@ -60,9 +60,8 @@ window.onload = function execute(){
 
     function getTipueSearch() {
         var startTimer = new Date().getTime();
-        var out = "";
-        // save objects about pages that are found
-        var found = [];
+        var results = [];
+        var resultsHTML = "";
         // get and modify search words
         var searchWordList = parseSearchWords(document.getElementById("tipue_search_input").value);
 
@@ -91,7 +90,7 @@ window.onload = function execute(){
 
                 // if the page contains search words, save the title etc
                 if (score != 0) {
-                    found.push({
+                    results.push({
                         "score": score,
                         "title": tipuesearch.pages[i].title,
                         "desc": pageContentString,
@@ -103,39 +102,39 @@ window.onload = function execute(){
 
             // build search results HTML
             if (set.showTitleCount) {
-                document.title = "(" + found.length + ") " + originalTitle;
+                document.title = "(" + results.length + ") " + originalTitle;
             }
-            if (found.length == 1) {
-                out += "<div id='tipue_search_results_count'>1 result";
+            if (results.length == 1) {
+                resultsHTML += "<div id='tipue_search_results_count'>1 result";
             } else {
-                out += "<div id='tipue_search_results_count'>" + found.length + " results";
+                resultsHTML += "<div id='tipue_search_results_count'>" + results.length + " results";
             }
             // display search time
             if (set.showTime) {
                 var endTimer = new Date().getTime();
                 var time = (endTimer - startTimer) / 1000;
-                out += " (" + time.toFixed(2) + " seconds)";
+                resultsHTML += " (" + time.toFixed(2) + " seconds)";
             }
-            out += "</div>";
+            resultsHTML += "</div>";
             if (commonWordsFoundList.length > 0) {
-                out += "<div id='tipue_ignored_words'>Common words \"" + commonWordsFoundList.join(", ") + "\" got ignored.</div>";
+                resultsHTML += "<div id='tipue_ignored_words'>Common words \"" + commonWordsFoundList.join(", ") + "\" got ignored.</div>";
             }
 
-            found.sort(function(a, b) {
+            results.sort(function(a, b) {
                 return b.score - a.score
             });
-            // add output for each found page
-            for (var i = 0; i < found.length; i++) {
-                out += "<div class='tipue_search_result'>";
-                out += "<div class='tipue_search_content_title'><a href='" + found[i].url + "'>" + found[i].title + "</a></div>";
+            // build HTML for each result
+            for (var i = 0; i < results.length; i++) {
+                resultsHTML += "<div class='tipue_search_result'>";
+                resultsHTML += "<div class='tipue_search_content_title'><a href='" + results[i].url + "'>" + results[i].title + "</a></div>";
                 if (set.showURL) {
-                    out += "<div class='tipue_search_content_url'><a href='" + found[i].url + "'>" + found[i].url + "</a></div>";
+                    resultsHTML += "<div class='tipue_search_content_url'><a href='" + results[i].url + "'>" + results[i].url + "</a></div>";
                 }
                 // add and modify output (for example display search words in bold)
-                if (found[i].desc) {
-                    var t = found[i].desc;
+                if (results[i].desc) {
+                    var t = results[i].desc;
                     if (set.showContext) {
-                        var s_1 = found[i].desc.toLowerCase().indexOf(searchWordList[0]);
+                        var s_1 = results[i].desc.toLowerCase().indexOf(searchWordList[0]);
                         if (s_1 > set.contextStart) {
                             var t_1 = t.substr(s_1 - set.contextBuffer);
                             var s_2 = t_1.indexOf(" ");
@@ -167,18 +166,18 @@ window.onload = function execute(){
                     }
                     t_d = t_d.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
                     t_d = t_d.replace(/h0012/g, "/span");
-                    out += "<div class='tipue_search_content_text'>" + t_d + "</div>";
+                    resultsHTML += "<div class='tipue_search_content_text'>" + t_d + "</div>";
                 }
-                if (found[i].note) {
-                    out += "<div class='tipue_search_note'>" + found[i].note + "</div>";
+                if (results[i].note) {
+                    resultsHTML += "<div class='tipue_search_note'>" + results[i].note + "</div>";
                 }
-                out += "</div>";
+                resultsHTML += "</div>";
             }
         } else {
-            out += "<div id='tipue_search_error'>Search should be " + set.minimumLength + " or more characters.</div>";
+            resultsHTML += "<div id='tipue_search_error'>Search should be " + set.minimumLength + " or more characters.</div>";
         }
         // give the page the actual contents, which were build up
-        document.getElementById("tipue_search_content").innerHTML = out;
+        document.getElementById("tipue_search_content").innerHTML = resultsHTML;
     }
 
     function parseSearchWords(searchWord) {
