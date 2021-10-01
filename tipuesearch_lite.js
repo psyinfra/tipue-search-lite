@@ -120,63 +120,59 @@ window.onload = function execute(){
             if (commonWordsFoundList.length > 0) {
                 out += "<div id='tipue_ignored_words'>Common words \"" + commonWordsFoundList.join(", ") + "\" got ignored.</div>";
             }
-            if (found.length != 0) {
-                found.sort(function(a, b) {
-                    return b.score - a.score
-                });
 
-                // add output for each found page
-                for (var i = 0; i < found.length; i++) {
-                    out += "<div class='tipue_search_result'>";
-                    out += "<div class='tipue_search_content_title'><a href='" + found[i].url + "'>" + found[i].title + "</a></div>";
-                    if (set.showURL) {
-                        out += "<div class='tipue_search_content_url'><a href='" + found[i].url + "'>" + found[i].url + "</a></div>";
-                    }
-                    // add and modify output (for example display search words in bold)
-                    if (found[i].desc) {
-                        var t = found[i].desc;
-                        if (set.showContext) {
-                            var s_1 = found[i].desc.toLowerCase().indexOf(searchWordList[0]);
-                            if (s_1 > set.contextStart) {
-                                var t_1 = t.substr(s_1 - set.contextBuffer);
-                                var s_2 = t_1.indexOf(" ");
-                                t_1 = t.substr(s_1 - set.contextBuffer + s_2);
-                                t_1 = t_1.trim();
-                                if (t_1.length > set.contextLength) {
-                                    t = "... " + t_1;
-                                }
-                            }
-                        }
-                        for (var f = 0; f < searchWordList.length; f++) {
-                            if (set.highlightTerms) {
-                                var patr = new RegExp("(" + searchWordList[f] + ")", "gi");
-                                t = t.replace(patr, "<h0011>$1<h0012>");
-                            }
-                        }
-                        var t_d = "";
-                        var t_w = t.split(" ");
-                        if (t_w.length < set.descriptiveWords) {
-                            t_d = t;
-                        } else {
-                            for (var f = 0; f < set.descriptiveWords; f++) {
-                                t_d += t_w[f] + " ";
-                            }
-                        }
-                        t_d = t_d.trim();
-                        if (t_d.charAt(t_d.length - 1) != ".") {
-                            t_d += " ...";
-                        }
-                        t_d = t_d.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
-                        t_d = t_d.replace(/h0012/g, "/span");
-                        out += "<div class='tipue_search_content_text'>" + t_d + "</div>";
-                    }
-                    if (found[i].note) {
-                        out += "<div class='tipue_search_note'>" + found[i].note + "</div>";
-                    }
-                    out += "</div>";
+            found.sort(function(a, b) {
+                return b.score - a.score
+            });
+            // add output for each found page
+            for (var i = 0; i < found.length; i++) {
+                out += "<div class='tipue_search_result'>";
+                out += "<div class='tipue_search_content_title'><a href='" + found[i].url + "'>" + found[i].title + "</a></div>";
+                if (set.showURL) {
+                    out += "<div class='tipue_search_content_url'><a href='" + found[i].url + "'>" + found[i].url + "</a></div>";
                 }
-            } else { // if words don't give results
-                out += "<div id='tipue_search_error'>Nothing found.</div>";
+                // add and modify output (for example display search words in bold)
+                if (found[i].desc) {
+                    var t = found[i].desc;
+                    if (set.showContext) {
+                        var s_1 = found[i].desc.toLowerCase().indexOf(searchWordList[0]);
+                        if (s_1 > set.contextStart) {
+                            var t_1 = t.substr(s_1 - set.contextBuffer);
+                            var s_2 = t_1.indexOf(" ");
+                            t_1 = t.substr(s_1 - set.contextBuffer + s_2);
+                            t_1 = t_1.trim();
+                            if (t_1.length > set.contextLength) {
+                                t = "... " + t_1;
+                            }
+                        }
+                    }
+                    for (var f = 0; f < searchWordList.length; f++) {
+                        if (set.highlightTerms) {
+                            var patr = new RegExp("(" + searchWordList[f] + ")", "gi");
+                            t = t.replace(patr, "<h0011>$1<h0012>");
+                        }
+                    }
+                    var t_d = "";
+                    var t_w = t.split(" ");
+                    if (t_w.length < set.descriptiveWords) {
+                        t_d = t;
+                    } else {
+                        for (var f = 0; f < set.descriptiveWords; f++) {
+                            t_d += t_w[f] + " ";
+                        }
+                    }
+                    t_d = t_d.trim();
+                    if (t_d.charAt(t_d.length - 1) != ".") {
+                        t_d += " ...";
+                    }
+                    t_d = t_d.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
+                    t_d = t_d.replace(/h0012/g, "/span");
+                    out += "<div class='tipue_search_content_text'>" + t_d + "</div>";
+                }
+                if (found[i].note) {
+                    out += "<div class='tipue_search_note'>" + found[i].note + "</div>";
+                }
+                out += "</div>";
             }
         } else {
             out += "<div id='tipue_search_error'>Search should be " + set.minimumLength + " or more characters.</div>";
