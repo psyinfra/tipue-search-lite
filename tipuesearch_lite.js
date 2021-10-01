@@ -17,7 +17,6 @@ var tipuesearchWeight = {'weight': [
 
 
 function parseSearchWords(searchWord) {
-    searchWord = searchWord.replace(/\+/g, " ").replace(/\s\s+/g, " ");
     var searchWordList = [];
     while (searchWord.length > 0) {
         searchWord = searchWord.trim();
