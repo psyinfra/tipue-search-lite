@@ -53,7 +53,7 @@ window.onload = function execute(){
         // add to address bar and history
         history.pushState({}, historyTitle, historyUrl);
         return false;
-    }
+    };
 
     function getTipueSearch() {
         var startTimer = new Date().getTime();
@@ -175,15 +175,15 @@ window.onload = function execute(){
             if (query.charAt(0) == '"' && query.includes('"', 1)) {
                 end = query.indexOf('"', 1);
                 searchTerms.push(query.slice(1, end));
-                query = query.slice(end + 1)
+                query = query.slice(end + 1);
             } else if (query.charAt(0) == "'" && query.includes("'", 1)) {
                 end = query.indexOf("'", 1);
                 searchTerms.push(query.slice(1, end));
-                query = query.slice(end + 1)
+                query = query.slice(end + 1);
             } else if (query.includes(" ", 1)) {
                 end = query.indexOf(" ", 1);
                 searchTerms.push(query.slice(0, end));
-                query = query.slice(end + 1)
+                query = query.slice(end + 1);
             } else {
                 searchTerms.push(query);
                 query = '';
@@ -228,7 +228,7 @@ window.onload = function execute(){
                 position_in_pattern = prefix_table[position_in_pattern];
             }
 
-            position_in_pattern = position_in_pattern + 1
+            position_in_pattern = position_in_pattern + 1;
 
             // in case end of pattern is reached
             if (position_in_pattern === pattern_len) {
