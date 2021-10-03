@@ -181,6 +181,7 @@ window.onload = function execute(){
 
     function parseSearchWords(searchWord) {
         var searchWordList = [];
+
         while (searchWord.length > 0) {
             searchWord = searchWord.trim();
             if (searchWord.charAt(0) == '"' && searchWord.indexOf('"', 1) != -1) {
@@ -200,9 +201,8 @@ window.onload = function execute(){
                 searchWord = '';
             }
         }
-        while (searchWordList.indexOf("") != -1) {
-            searchWordList.splice(searchWordList.indexOf(""), 1);
-        }
+
+        searchWordList = searchWordList.filter(item => (item));
         return searchWordList;
     }
 
