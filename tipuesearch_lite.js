@@ -62,20 +62,10 @@ window.onload = function execute(){
         var startTimer = new Date().getTime();
         var results = [];
         var resultsHTML = "";
-        // get and modify search words
-        var searchWordList = parseSearchWords(document.getElementById("tipue_search_input").value);
 
-        // ignore common words in search
-        var tempSearchWordList = [];
-        var commonWordsFoundList = [];
-        for (var i = 0; i < searchWordList.length; i++) {
-            if (commonWordList.indexOf(searchWordList[i].toLowerCase()) == -1) {
-                tempSearchWordList.push(searchWordList[i]);
-            } else {
-                commonWordsFoundList.push(searchWordList[i]);
-            }
-        }
-        searchWordList = tempSearchWordList;
+        let searchWordList = parseSearchWords(document.getElementById("tipue_search_input").value);
+        let commonWordsFoundList = commonWordList.filter(item => searchWordList.includes(item));
+        searchWordList = searchWordList.filter(item => !commonWordsFoundList.includes(item));
 
         // actual "search" if the search word list is long enough
         if (searchWordList.join().length + commonWordsFoundList.join().length >= set.minimumLength) {
