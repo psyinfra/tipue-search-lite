@@ -175,15 +175,15 @@ window.onload = function execute(){
 
         while (searchWord.length > 0) {
             searchWord = searchWord.trim();
-            if (searchWord.charAt(0) == '"' && searchWord.indexOf('"', 1) != -1) {
+            if (searchWord.charAt(0) == '"' && searchWord.includes('"', 1)) {
                 end = searchWord.indexOf('"', 1);
                 searchWordList.push(searchWord.slice(1, end));
                 searchWord = searchWord.slice(end + 1)
-            } else if (searchWord.charAt(0) == "'" && searchWord.indexOf("'", 1) != -1) {
+            } else if (searchWord.charAt(0) == "'" && searchWord.includes("'", 1)) {
                 end = searchWord.indexOf("'", 1);
                 searchWordList.push(searchWord.slice(1, end));
                 searchWord = searchWord.slice(end + 1)
-            } else if (searchWord.indexOf(" ", 1) != -1) {
+            } else if (searchWord.includes(" ", 1)) {
                 end = searchWord.indexOf(" ", 1);
                 searchWordList.push(searchWord.slice(0, end));
                 searchWord = searchWord.slice(end + 1)
