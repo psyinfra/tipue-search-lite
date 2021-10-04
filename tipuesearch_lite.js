@@ -19,7 +19,6 @@ window.onload = function execute(){
         "contextStart": 90,
         "descriptiveWords": 25,
         "highlightTerms": true,
-        "minimumLength": 3,
         "showContext": true,
         "showTime": true,
         "showTitleCount": true,
@@ -64,85 +63,81 @@ window.onload = function execute(){
         let commonTermHits = commonTerms.filter(item => searchTerms.includes(item));
         searchTerms = searchTerms.filter(item => !commonTermHits.includes(item));
 
-        // actual "search" if the search word list is long enough
-        if (searchTerms.join().length + commonTermHits.join().length >= set.minimumLength) {
-            results = getSearchResults(searchTerms, tipuesearch);
+        results = getSearchResults(searchTerms, tipuesearch);
 
-            // build search results HTML
-            if (set.showTitleCount) {
-                document.title = "(" + results.length + ") " + originalTitle;
+        // build search results HTML
+        if (set.showTitleCount) {
+            document.title = "(" + results.length + ") " + originalTitle;
+        }
+        if (results.length == 1) {
+            resultsHTML += "<div id='tipue_search_results_count'>1 result";
+        } else {
+            resultsHTML += "<div id='tipue_search_results_count'>" + results.length + " results";
+        }
+        // display search time
+        if (set.showTime) {
+            var endTimer = new Date().getTime();
+            var time = (endTimer - startTimer) / 1000;
+            resultsHTML += " (" + time.toFixed(2) + " seconds)";
+        }
+        resultsHTML += "</div>";
+        if (commonTermHits.length > 0) {
+            resultsHTML += "<div id='tipue_ignored_words'>Common words \"" + commonTermHits.join(", ") + "\" got ignored.</div>";
+        }
+
+        // build HTML for each result
+        for (const r of results) {
+            resultsHTML += "<div class='tipue_search_result'>";
+            resultsHTML += "<div class='tipue_search_content_title'><a href='" + r.url + "'>" + r.title + "</a></div>";
+            if (set.showURL) {
+                resultsHTML += "<div class='tipue_search_content_url'><a href='" + r.url + "'>" + r.url + "</a></div>";
             }
-            if (results.length == 1) {
-                resultsHTML += "<div id='tipue_search_results_count'>1 result";
-            } else {
-                resultsHTML += "<div id='tipue_search_results_count'>" + results.length + " results";
+            // add and modify output (for example display search words in bold)
+            if (r.desc) {
+                var t = r.desc;
+                if (set.showContext) {
+                    var s_1 = r.desc.toLowerCase().indexOf(searchTerms[0]);
+                    if (s_1 > set.contextStart) {
+                        var t_1 = t.substr(s_1 - set.contextBuffer);
+                        var s_2 = t_1.indexOf(" ");
+                        t_1 = t.substr(s_1 - set.contextBuffer + s_2);
+                        t_1 = t_1.trim();
+                        if (t_1.length > set.contextLength) {
+                            t = "... " + t_1;
+                        }
+                    }
+                }
+                for (var f = 0; f < searchTerms.length; f++) {
+                    if (set.highlightTerms) {
+                        var patr = new RegExp("(" + searchTerms[f] + ")", "gi");
+                        t = t.replace(patr, "<h0011>$1<h0012>");
+                    }
+                }
+                var t_d = "";
+                var t_w = t.split(" ");
+                if (t_w.length < set.descriptiveWords) {
+                    t_d = t;
+                } else {
+                    for (var f = 0; f < set.descriptiveWords; f++) {
+                        t_d += t_w[f] + " ";
+                    }
+                }
+                t_d = t_d.trim();
+                if (t_d.charAt(t_d.length - 1) != ".") {
+                    t_d += " ...";
+                }
+                t_d = t_d.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
+                t_d = t_d.replace(/h0012/g, "/span");
+                resultsHTML += "<div class='tipue_search_content_text'>" + t_d + "</div>";
             }
-            // display search time
-            if (set.showTime) {
-                var endTimer = new Date().getTime();
-                var time = (endTimer - startTimer) / 1000;
-                resultsHTML += " (" + time.toFixed(2) + " seconds)";
+            if (r.note) {
+                resultsHTML += "<div class='tipue_search_note'>" + r.note + "</div>";
             }
             resultsHTML += "</div>";
-            if (commonTermHits.length > 0) {
-                resultsHTML += "<div id='tipue_ignored_words'>Common words \"" + commonTermHits.join(", ") + "\" got ignored.</div>";
-            }
-
-            // build HTML for each result
-            for (const r of results) {
-                resultsHTML += "<div class='tipue_search_result'>";
-                resultsHTML += "<div class='tipue_search_content_title'><a href='" + r.url + "'>" + r.title + "</a></div>";
-                if (set.showURL) {
-                    resultsHTML += "<div class='tipue_search_content_url'><a href='" + r.url + "'>" + r.url + "</a></div>";
-                }
-                // add and modify output (for example display search words in bold)
-                if (r.desc) {
-                    var t = r.desc;
-                    if (set.showContext) {
-                        var s_1 = r.desc.toLowerCase().indexOf(searchTerms[0]);
-                        if (s_1 > set.contextStart) {
-                            var t_1 = t.substr(s_1 - set.contextBuffer);
-                            var s_2 = t_1.indexOf(" ");
-                            t_1 = t.substr(s_1 - set.contextBuffer + s_2);
-                            t_1 = t_1.trim();
-                            if (t_1.length > set.contextLength) {
-                                t = "... " + t_1;
-                            }
-                        }
-                    }
-                    for (var f = 0; f < searchTerms.length; f++) {
-                        if (set.highlightTerms) {
-                            var patr = new RegExp("(" + searchTerms[f] + ")", "gi");
-                            t = t.replace(patr, "<h0011>$1<h0012>");
-                        }
-                    }
-                    var t_d = "";
-                    var t_w = t.split(" ");
-                    if (t_w.length < set.descriptiveWords) {
-                        t_d = t;
-                    } else {
-                        for (var f = 0; f < set.descriptiveWords; f++) {
-                            t_d += t_w[f] + " ";
-                        }
-                    }
-                    t_d = t_d.trim();
-                    if (t_d.charAt(t_d.length - 1) != ".") {
-                        t_d += " ...";
-                    }
-                    t_d = t_d.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
-                    t_d = t_d.replace(/h0012/g, "/span");
-                    resultsHTML += "<div class='tipue_search_content_text'>" + t_d + "</div>";
-                }
-                if (r.note) {
-                    resultsHTML += "<div class='tipue_search_note'>" + r.note + "</div>";
-                }
-                resultsHTML += "</div>";
-            }
-        } else {
-            resultsHTML += "<div id='tipue_search_error'>Search should be " + set.minimumLength + " or more characters.</div>";
         }
-        // give the page the actual contents, which were build up
-        document.getElementById("tipue_search_content").innerHTML = resultsHTML;
+    }
+    // give the page the actual contents, which were build up
+    document.getElementById("tipue_search_content").innerHTML = resultsHTML;
     }
 
     function getSearchResults(searchTerms, tipueIndex) {
