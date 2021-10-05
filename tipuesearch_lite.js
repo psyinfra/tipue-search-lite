@@ -191,6 +191,8 @@ window.onload = function execute(){
         }
 
         searchTerms = searchTerms.filter(item => (item));
+        // remove duplicates
+        searchTerms = [...new Set(searchTerms)];
         return searchTerms;
     }
 
