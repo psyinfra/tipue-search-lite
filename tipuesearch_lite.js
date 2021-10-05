@@ -62,29 +62,11 @@ window.onload = function execute(){
         let searchTerms = parseQuery(document.getElementById("tipue_search_input").value);
         let commonTermHits = commonTerms.filter(item => searchTerms.includes(item));
         searchTerms = searchTerms.filter(item => !commonTermHits.includes(item));
-
         results = getSearchResults(searchTerms, tipuesearch);
 
-        // build search results HTML
         if (set.showTitleCount) {
             document.title = "(" + results.length + ") " + originalTitle;
         }
-        if (results.length == 1) {
-            resultsHTML += "<div id='tipue_search_results_count'>1 result";
-        } else {
-            resultsHTML += "<div id='tipue_search_results_count'>" + results.length + " results";
-        }
-        // display search time
-        if (set.showTime) {
-            let endTimer = new Date().getTime();
-            let time = (endTimer - startTimer) / 1000;
-            resultsHTML += " (" + time.toFixed(2) + " seconds)";
-        }
-        resultsHTML += "</div>";
-        if (commonTermHits.length > 0) {
-            resultsHTML += "<div id='tipue_ignored_words'>Common words \"" + commonTermHits.join(", ") + "\" got ignored.</div>";
-        }
-
         // build HTML for each result
         for (const r of results) {
             resultsHTML += "<div class='tipue_search_result'>";
@@ -135,9 +117,32 @@ window.onload = function execute(){
             }
             resultsHTML += "</div>";
         }
-    // give the page the actual contents, which were build up
-    document.getElementById("tipue_search_content").innerHTML = resultsHTML;
+
+        // add information to beginning of the output
+        resultsHTML = getSearchInfo(results, startTimer, commonTermHits) + resultsHTML;
+        // give the page the actual contents, which were build up
+        document.getElementById("tipue_search_content").innerHTML = resultsHTML;
     }
+
+    function getSearchInfo(results, startTimer, commonTermHits) {
+        let resultsInfo = ""
+        if (results.length == 1) {
+            resultsInfo += "<div id='tipue_search_results_count'>1 result";
+        } else {
+            resultsInfo += "<div id='tipue_search_results_count'>" + results.length + " results";
+        }
+        // display search time
+        if (set.showTime) {
+            let endTimer = new Date().getTime();
+            let time = (endTimer - startTimer) / 1000;
+            resultsInfo += " (" + time.toFixed(2) + " seconds)";
+        }
+        resultsInfo += "</div>";
+        if (commonTermHits.length > 0) {
+            resultsInfo += "<div id='tipue_ignored_words'>Common words \"" + commonTermHits.join(", ") + "\" got ignored.</div>";
+        }
+        return resultsInfo;
+   }
 }
 
     function getSearchResults(searchTerms, tipueIndex) {
