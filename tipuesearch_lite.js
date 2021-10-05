@@ -2,10 +2,10 @@
 // Licensed under the MIT license. See the LICENSE file for details.
 
 // list from http://www.ranks.nl/stopwords
-var commonTerms = ["a", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't", "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"];
+let commonTerms = ["a", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't", "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"];
 
 // Weighting for tipue KMP algorithm
-var tipuesearchWeight = {'weight': [
+let tipuesearchWeight = {'weight': [
     {'url': 'http://www.tipue.com', 'score': 60},
     {'url': 'http://www.tipue.com/search', 'score': 60},
     {'url': 'http://www.tipue.com/tipr', 'score': 30},
@@ -38,10 +38,10 @@ window.onload = function execute(){
     document.getElementById('tipue_search_input').form.onsubmit = function() {
         getTipueSearch();
 
-        var historyUrl = '';
-        var historyTitle = '';
+        let historyUrl = '';
+        let historyTitle = '';
 
-        var term = document.getElementById("tipue_search_input").value;
+        let term = document.getElementById("tipue_search_input").value;
         if (!term || term.length === 0) {
             historyUrl = location.href.split('?')[0];
         } else {
@@ -55,9 +55,9 @@ window.onload = function execute(){
     };
 
     function getTipueSearch() {
-        var startTimer = new Date().getTime();
-        var results = [];
-        var resultsHTML = "";
+        let startTimer = new Date().getTime();
+        let results = [];
+        let resultsHTML = "";
 
         let searchTerms = parseQuery(document.getElementById("tipue_search_input").value);
         let commonTermHits = commonTerms.filter(item => searchTerms.includes(item));
@@ -76,8 +76,8 @@ window.onload = function execute(){
         }
         // display search time
         if (set.showTime) {
-            var endTimer = new Date().getTime();
-            var time = (endTimer - startTimer) / 1000;
+            let endTimer = new Date().getTime();
+            let time = (endTimer - startTimer) / 1000;
             resultsHTML += " (" + time.toFixed(2) + " seconds)";
         }
         resultsHTML += "</div>";
@@ -94,12 +94,12 @@ window.onload = function execute(){
             }
             // add and modify output (for example display search words in bold)
             if (r.desc) {
-                var t = r.desc;
+                let t = r.desc;
                 if (set.showContext) {
-                    var s_1 = r.desc.toLowerCase().indexOf(searchTerms[0]);
+                    let s_1 = r.desc.toLowerCase().indexOf(searchTerms[0]);
                     if (s_1 > set.contextStart) {
-                        var t_1 = t.substr(s_1 - set.contextBuffer);
-                        var s_2 = t_1.indexOf(" ");
+                        let t_1 = t.substr(s_1 - set.contextBuffer);
+                        let s_2 = t_1.indexOf(" ");
                         t_1 = t.substr(s_1 - set.contextBuffer + s_2);
                         t_1 = t_1.trim();
                         if (t_1.length > set.contextLength) {
@@ -107,18 +107,18 @@ window.onload = function execute(){
                         }
                     }
                 }
-                for (var f = 0; f < searchTerms.length; f++) {
+                for (let f = 0; f < searchTerms.length; f++) {
                     if (set.highlightTerms) {
-                        var patr = new RegExp("(" + searchTerms[f] + ")", "gi");
+                        let patr = new RegExp("(" + searchTerms[f] + ")", "gi");
                         t = t.replace(patr, "<h0011>$1<h0012>");
                     }
                 }
-                var t_d = "";
-                var t_w = t.split(" ");
+                let t_d = "";
+                let t_w = t.split(" ");
                 if (t_w.length < set.descriptiveWords) {
                     t_d = t;
                 } else {
-                    for (var f = 0; f < set.descriptiveWords; f++) {
+                    for (let f = 0; f < set.descriptiveWords; f++) {
                         t_d += t_w[f] + " ";
                     }
                 }
@@ -135,13 +135,13 @@ window.onload = function execute(){
             }
             resultsHTML += "</div>";
         }
-    }
     // give the page the actual contents, which were build up
     document.getElementById("tipue_search_content").innerHTML = resultsHTML;
     }
+}
 
     function getSearchResults(searchTerms, tipueIndex) {
-        var results = [];
+        let results = [];
 
         for (const page of tipueIndex.pages) {
             let score = 0;
@@ -163,7 +163,7 @@ window.onload = function execute(){
     }
 
     function parseQuery(query) {
-        var searchTerms = [];
+        let searchTerms = [];
 
         while (query.length > 0) {
             query = query.trim();
@@ -192,13 +192,13 @@ window.onload = function execute(){
     // -------------------- SEARCH ALGORITHM ------------------------
     function KMP_prefix(pattern, pattern_len) {
         // length of found prefix
-        var prefix_len = -1;
+        let prefix_len = -1;
 
         // Start value is always -1
-        var prefix_table = [];
+        let prefix_table = [];
         prefix_table.push(prefix_len);
 
-        for (var position_in_pattern = 0; position_in_pattern < pattern_len; position_in_pattern++) {
+        for (let position_in_pattern = 0; position_in_pattern < pattern_len; position_in_pattern++) {
             // if prefix is too long, shorten it
             while (prefix_len >= 0 && pattern[prefix_len] !== pattern[position_in_pattern]) {
                 prefix_len = prefix_table[prefix_len];
@@ -212,11 +212,11 @@ window.onload = function execute(){
     }
 
     function KMP_search(pattern, prefix_table, text){
-        var position_in_pattern = 0;
-        var cnt = 0;
-        var pattern_len = pattern.length;
+        let position_in_pattern = 0;
+        let cnt = 0;
+        let pattern_len = pattern.length;
 
-        for (var position_in_text = 0; position_in_text < text.length; position_in_text++) {
+        for (let position_in_text = 0; position_in_text < text.length; position_in_text++) {
             // move pattern until text and pattern match
             while (position_in_pattern >= 0 && text[position_in_text].toLowerCase() !== pattern[position_in_pattern].toLowerCase()) {
                 // use prefix-table
@@ -238,11 +238,11 @@ window.onload = function execute(){
     }
 
     function tipue_KMP(searchTerms, page) {
-        var score = 0;
-        for (var f = 0; f < searchTerms.length; f++) {
-            var searchWord = searchTerms[f].toLowerCase();
-            var pre_tab = KMP_prefix(searchWord, searchWord.length);
-            var match_cnt = KMP_search(searchWord, pre_tab, page.title);
+        let score = 0;
+        for (let f = 0; f < searchTerms.length; f++) {
+            let searchWord = searchTerms[f].toLowerCase();
+            let pre_tab = KMP_prefix(searchWord, searchWord.length);
+            let match_cnt = KMP_search(searchWord, pre_tab, page.title);
             if (match_cnt != 0) {
                 score += (20 * match_cnt);
             }
@@ -262,7 +262,7 @@ window.onload = function execute(){
                 score += 20;
             }
             if (score != 0) {
-                for (var e = 0; e < tipuesearchWeight.weight.length; e++) {
+                for (let e = 0; e < tipuesearchWeight.weight.length; e++) {
                     if (page.url == tipuesearchWeight.weight[e].url) {
                         score += tipuesearchWeight.weight[e].score;
                     }
@@ -279,4 +279,3 @@ window.onload = function execute(){
         }
         return score;
     }
-};
