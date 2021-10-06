@@ -41,12 +41,12 @@ window.onload = function execute(){
         let historyUrl = '';
         let historyTitle = '';
 
-        let term = document.getElementById("tipue_search_input").value;
-        if (!term || term.length === 0) {
+        let query = document.getElementById("tipue_search_input").value;
+        if (!query || query.length === 0) {
             historyUrl = location.href.split('?')[0];
         } else {
-            historyUrl = historyUrl + '?q=' + term;
-            historyTitle = 'Search - ' + term;
+            historyUrl = historyUrl + '?q=' + query;
+            historyTitle = 'Search - ' + query;
         }
 
         // add to address bar and history
@@ -119,12 +119,12 @@ window.onload = function execute(){
         }
 
         // add information to beginning of the output
-        resultsHTML = getSearchInfo(results, startTimer, commonTermHits) + resultsHTML;
+        resultsHTML = buildResultsInfo(results, startTimer, commonTermHits) + resultsHTML;
         // give the page the actual contents, which were build up
         document.getElementById("tipue_search_content").innerHTML = resultsHTML;
     }
 
-    function getSearchInfo(results, startTimer, commonTermHits) {
+    function buildResultsInfo(results, startTimer, commonTermHits) {
         let resultsInfo = ""
         if (results.length == 1) {
             resultsInfo += "<div id='tipue_search_results_count'>1 result";
