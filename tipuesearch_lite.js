@@ -89,9 +89,9 @@ window.onload = function execute(){
                         }
                     }
                 }
-                for (let f = 0; f < searchTerms.length; f++) {
+                for (const term of searchTerms) {
                     if (set.highlightTerms) {
-                        let patr = new RegExp("(" + searchTerms[f] + ")", "gi");
+                        let patr = new RegExp("(" + term + ")", "gi");
                         t = t.replace(patr, "<h0011>$1<h0012>");
                     }
                 }
