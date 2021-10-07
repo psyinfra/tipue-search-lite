@@ -20,7 +20,6 @@ window.onload = function execute(){
         "descriptiveWords": 25,
         "showContext": true,
         "showTime": true,
-        "showTitleCount": true,
         "showURL": false
     };
 
@@ -62,10 +61,8 @@ window.onload = function execute(){
         let commonTermHits = commonTerms.filter(item => searchTerms.includes(item));
         searchTerms = searchTerms.filter(item => !commonTermHits.includes(item));
         results = getSearchResults(searchTerms, tipuesearch);
+        document.title = "(" + results.length + ") " + originalTitle;
 
-        if (set.showTitleCount) {
-            document.title = "(" + results.length + ") " + originalTitle;
-        }
         // build HTML for each result
         for (const r of results) {
             resultsHTML += "<div class='tipue_search_result'>";
