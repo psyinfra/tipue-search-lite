@@ -75,40 +75,39 @@ window.onload = function execute(){
                 resultsHTML += "<div class='tipue_search_content_url'><a href='" + r.url + "'>" + r.url + "</a></div>";
             }
             // add and modify output (for example display search words in bold)
-            if (r.desc) {
-                let t = r.desc;
+            if (r.description) {
+                let pageText = r.description;
                 if (set.showContext) {
-                    let s_1 = r.desc.toLowerCase().indexOf(searchTerms[0]);
-                    if (s_1 > set.contextStart) {
-                        let t_1 = t.substr(s_1 - set.contextBuffer);
-                        let s_2 = t_1.indexOf(" ");
-                        t_1 = t.substr(s_1 - set.contextBuffer + s_2);
-                        t_1 = t_1.trim();
-                        if (t_1.length > set.contextLength) {
-                            t = "... " + t_1;
+                    let posSearchTerm = r.description.toLowerCase().indexOf([... searchTerms][0]);
+                    if (posSearchTerm > set.contextStart) {
+                        let partialPageText = pageText.substr(posSearchTerm - set.contextBuffer);
+                        partialPageText = pageText.substr(posSearchTerm - set.contextBuffer + partialPageText.indexOf(" "));
+                        partialPageText = partialPageText.trim();
+                        if (partialPageText.length > set.contextLength) {
+                            pageText = "... " + partialPageText;
                         }
                     }
                 }
                 for (const term of searchTerms) {
                     if (set.highlightTerms) {
                         let patr = new RegExp("(" + term + ")", "gi");
-                        t = t.replace(patr, "<h0011>$1<h0012>");
+                        pageText = pageText.replace(patr, "<h0011>$1<h0012>");
                     }
                 }
-                let t_d = "";
-                let t_w = t.split(" ");
-                if (t_w.length < set.descriptiveWords) {
-                    t_d = t;
+                partialPageText = "";
+                let listOfPageText = pageText.split(" ");
+                if (listOfPageText.length < set.descriptiveWords) {
+                    partialPageText = pageText;
                 } else {
-                    t_d += t_w.slice(0, set.descriptiveWords).join(" ");
+                    partialPageText += listOfPageText.slice(0, set.descriptiveWords).join(" ");
                 }
-                t_d = t_d.trim();
-                if (t_d.charAt(t_d.length - 1) != ".") {
-                    t_d += " ...";
+                partialPageText = partialPageText.trim();
+                if (partialPageText.charAt(partialPageText.length - 1) != ".") {
+                    partialPageText += " ...";
                 }
-                t_d = t_d.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
-                t_d = t_d.replace(/h0012/g, "/span");
-                resultsHTML += "<div class='tipue_search_content_text'>" + t_d + "</div>";
+                partialPageText = partialPageText.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
+                partialPageText = partialPageText.replace(/h0012/g, "/span");
+                resultsHTML += "<div class='tipue_search_content_text'>" + partialPageText + "</div>";
             }
             if (r.note) {
                 resultsHTML += "<div class='tipue_search_note'>" + r.note + "</div>";
@@ -154,7 +153,7 @@ window.onload = function execute(){
                 results.push({
                     "score": score,
                     "title": page.title,
-                    "desc": page.text,
+                    "description": page.text,
                     "url": page.url,
                     "note": page.note
                 });
