@@ -18,7 +18,6 @@ window.onload = function execute(){
         "contextLength": 60,
         "contextStart": 90,
         "descriptiveWords": 25,
-        "highlightTerms": true,
         "showContext": true,
         "showTime": true,
         "showTitleCount": true,
@@ -89,10 +88,8 @@ window.onload = function execute(){
                     }
                 }
                 for (const term of searchTerms) {
-                    if (set.highlightTerms) {
-                        let patr = new RegExp("(" + term + ")", "gi");
-                        pageText = pageText.replace(patr, "<h0011>$1<h0012>");
-                    }
+                    let patr = new RegExp("(" + term + ")", "gi");
+                    pageText = pageText.replace(patr, "<h0011>$1<h0012>");
                 }
                 partialPageText = "";
                 let listOfPageText = pageText.split(" ");
