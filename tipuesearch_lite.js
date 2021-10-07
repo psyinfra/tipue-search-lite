@@ -2,10 +2,10 @@
 // Licensed under the MIT license. See the LICENSE file for details.
 
 // list from http://www.ranks.nl/stopwords
-var commonTerms = ["a", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't", "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"];
+const commonTerms = ["a", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't", "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"];
 
 // Weighting for tipue KMP algorithm
-var tipuesearchWeight = {'weight': [
+const tipuesearchWeight = {'weight': [
     {'url': 'http://www.tipue.com', 'score': 60},
     {'url': 'http://www.tipue.com/search', 'score': 60},
     {'url': 'http://www.tipue.com/tipr', 'score': 30},
@@ -19,7 +19,6 @@ window.onload = function execute(){
         "contextStart": 90,
         "descriptiveWords": 25,
         "highlightTerms": true,
-        "minimumLength": 3,
         "showContext": true,
         "showTime": true,
         "showTitleCount": true,
@@ -39,15 +38,15 @@ window.onload = function execute(){
     document.getElementById('tipue_search_input').form.onsubmit = function() {
         getTipueSearch();
 
-        var historyUrl = '';
-        var historyTitle = '';
+        let historyUrl = '';
+        let historyTitle = '';
 
-        var term = document.getElementById("tipue_search_input").value;
-        if (!term || term.length === 0) {
+        let query = document.getElementById("tipue_search_input").value;
+        if (!query || query.length === 0) {
             historyUrl = location.href.split('?')[0];
         } else {
-            historyUrl = historyUrl + '?q=' + term;
-            historyTitle = 'Search - ' + term;
+            historyUrl = historyUrl + '?q=' + query;
+            historyTitle = 'Search - ' + query;
         }
 
         // add to address bar and history
@@ -56,97 +55,98 @@ window.onload = function execute(){
     };
 
     function getTipueSearch() {
-        var startTimer = new Date().getTime();
-        var results = [];
-        var resultsHTML = "";
+        const startTimer = new Date().getTime();
+        let results = [];
+        let resultsHTML = "";
 
         let searchTerms = parseQuery(document.getElementById("tipue_search_input").value);
         let commonTermHits = commonTerms.filter(item => searchTerms.includes(item));
         searchTerms = searchTerms.filter(item => !commonTermHits.includes(item));
+        results = getSearchResults(searchTerms, tipuesearch);
 
-        // actual "search" if the search word list is long enough
-        if (searchTerms.join().length + commonTermHits.join().length >= set.minimumLength) {
-            results = getSearchResults(searchTerms, tipuesearch);
-
-            // build search results HTML
-            if (set.showTitleCount) {
-                document.title = "(" + results.length + ") " + originalTitle;
+        if (set.showTitleCount) {
+            document.title = "(" + results.length + ") " + originalTitle;
+        }
+        // build HTML for each result
+        for (const r of results) {
+            resultsHTML += "<div class='tipue_search_result'>";
+            resultsHTML += "<div class='tipue_search_content_title'><a href='" + r.url + "'>" + r.title + "</a></div>";
+            if (set.showURL) {
+                resultsHTML += "<div class='tipue_search_content_url'><a href='" + r.url + "'>" + r.url + "</a></div>";
             }
-            if (results.length == 1) {
-                resultsHTML += "<div id='tipue_search_results_count'>1 result";
-            } else {
-                resultsHTML += "<div id='tipue_search_results_count'>" + results.length + " results";
+            // add and modify output (for example display search words in bold)
+            if (r.desc) {
+                let t = r.desc;
+                if (set.showContext) {
+                    let s_1 = r.desc.toLowerCase().indexOf(searchTerms[0]);
+                    if (s_1 > set.contextStart) {
+                        let t_1 = t.substr(s_1 - set.contextBuffer);
+                        let s_2 = t_1.indexOf(" ");
+                        t_1 = t.substr(s_1 - set.contextBuffer + s_2);
+                        t_1 = t_1.trim();
+                        if (t_1.length > set.contextLength) {
+                            t = "... " + t_1;
+                        }
+                    }
+                }
+                for (let f = 0; f < searchTerms.length; f++) {
+                    if (set.highlightTerms) {
+                        let patr = new RegExp("(" + searchTerms[f] + ")", "gi");
+                        t = t.replace(patr, "<h0011>$1<h0012>");
+                    }
+                }
+                let t_d = "";
+                let t_w = t.split(" ");
+                if (t_w.length < set.descriptiveWords) {
+                    t_d = t;
+                } else {
+                    for (let f = 0; f < set.descriptiveWords; f++) {
+                        t_d += t_w[f] + " ";
+                    }
+                }
+                t_d = t_d.trim();
+                if (t_d.charAt(t_d.length - 1) != ".") {
+                    t_d += " ...";
+                }
+                t_d = t_d.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
+                t_d = t_d.replace(/h0012/g, "/span");
+                resultsHTML += "<div class='tipue_search_content_text'>" + t_d + "</div>";
             }
-            // display search time
-            if (set.showTime) {
-                var endTimer = new Date().getTime();
-                var time = (endTimer - startTimer) / 1000;
-                resultsHTML += " (" + time.toFixed(2) + " seconds)";
+            if (r.note) {
+                resultsHTML += "<div class='tipue_search_note'>" + r.note + "</div>";
             }
             resultsHTML += "</div>";
-            if (commonTermHits.length > 0) {
-                resultsHTML += "<div id='tipue_ignored_words'>Common words \"" + commonTermHits.join(", ") + "\" got ignored.</div>";
-            }
-
-            // build HTML for each result
-            for (const r of results) {
-                resultsHTML += "<div class='tipue_search_result'>";
-                resultsHTML += "<div class='tipue_search_content_title'><a href='" + r.url + "'>" + r.title + "</a></div>";
-                if (set.showURL) {
-                    resultsHTML += "<div class='tipue_search_content_url'><a href='" + r.url + "'>" + r.url + "</a></div>";
-                }
-                // add and modify output (for example display search words in bold)
-                if (r.desc) {
-                    var t = r.desc;
-                    if (set.showContext) {
-                        var s_1 = r.desc.toLowerCase().indexOf(searchTerms[0]);
-                        if (s_1 > set.contextStart) {
-                            var t_1 = t.substr(s_1 - set.contextBuffer);
-                            var s_2 = t_1.indexOf(" ");
-                            t_1 = t.substr(s_1 - set.contextBuffer + s_2);
-                            t_1 = t_1.trim();
-                            if (t_1.length > set.contextLength) {
-                                t = "... " + t_1;
-                            }
-                        }
-                    }
-                    for (var f = 0; f < searchTerms.length; f++) {
-                        if (set.highlightTerms) {
-                            var patr = new RegExp("(" + searchTerms[f] + ")", "gi");
-                            t = t.replace(patr, "<h0011>$1<h0012>");
-                        }
-                    }
-                    var t_d = "";
-                    var t_w = t.split(" ");
-                    if (t_w.length < set.descriptiveWords) {
-                        t_d = t;
-                    } else {
-                        for (var f = 0; f < set.descriptiveWords; f++) {
-                            t_d += t_w[f] + " ";
-                        }
-                    }
-                    t_d = t_d.trim();
-                    if (t_d.charAt(t_d.length - 1) != ".") {
-                        t_d += " ...";
-                    }
-                    t_d = t_d.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
-                    t_d = t_d.replace(/h0012/g, "/span");
-                    resultsHTML += "<div class='tipue_search_content_text'>" + t_d + "</div>";
-                }
-                if (r.note) {
-                    resultsHTML += "<div class='tipue_search_note'>" + r.note + "</div>";
-                }
-                resultsHTML += "</div>";
-            }
-        } else {
-            resultsHTML += "<div id='tipue_search_error'>Search should be " + set.minimumLength + " or more characters.</div>";
         }
+
+        // add information to beginning of the output
+        resultsHTML = buildResultsInfo(results, startTimer, commonTermHits) + resultsHTML;
         // give the page the actual contents, which were build up
         document.getElementById("tipue_search_content").innerHTML = resultsHTML;
     }
 
+    function buildResultsInfo(results, startTimer, commonTermHits) {
+        let resultsInfo = ""
+        if (results.length == 1) {
+            resultsInfo += "<div id='tipue_search_results_count'>1 result";
+        } else {
+            resultsInfo += "<div id='tipue_search_results_count'>" + results.length + " results";
+        }
+        // display search time
+        if (set.showTime) {
+            const endTimer = new Date().getTime();
+            const time = (endTimer - startTimer) / 1000;
+            resultsInfo += " (" + time.toFixed(2) + " seconds)";
+        }
+        resultsInfo += "</div>";
+        if (commonTermHits.length > 0) {
+            resultsInfo += "<div id='tipue_ignored_words'>Common words \"" + commonTermHits.join(", ") + "\" got ignored.</div>";
+        }
+        return resultsInfo;
+   }
+}
+
     function getSearchResults(searchTerms, tipueIndex) {
-        var results = [];
+        let results = [];
 
         for (const page of tipueIndex.pages) {
             let score = 0;
@@ -168,7 +168,7 @@ window.onload = function execute(){
     }
 
     function parseQuery(query) {
-        var searchTerms = [];
+        let searchTerms = [];
 
         while (query.length > 0) {
             query = query.trim();
@@ -191,19 +191,21 @@ window.onload = function execute(){
         }
 
         searchTerms = searchTerms.filter(item => (item));
+        // remove duplicates
+        searchTerms = [...new Set(searchTerms)];
         return searchTerms;
     }
 
     // -------------------- SEARCH ALGORITHM ------------------------
     function KMP_prefix(pattern, pattern_len) {
         // length of found prefix
-        var prefix_len = -1;
+        let prefix_len = -1;
 
         // Start value is always -1
-        var prefix_table = [];
+        let prefix_table = [];
         prefix_table.push(prefix_len);
 
-        for (var position_in_pattern = 0; position_in_pattern < pattern_len; position_in_pattern++) {
+        for (let position_in_pattern = 0; position_in_pattern < pattern_len; position_in_pattern++) {
             // if prefix is too long, shorten it
             while (prefix_len >= 0 && pattern[prefix_len] !== pattern[position_in_pattern]) {
                 prefix_len = prefix_table[prefix_len];
@@ -217,11 +219,11 @@ window.onload = function execute(){
     }
 
     function KMP_search(pattern, prefix_table, text){
-        var position_in_pattern = 0;
-        var cnt = 0;
-        var pattern_len = pattern.length;
+        let position_in_pattern = 0;
+        let cnt = 0;
+        let pattern_len = pattern.length;
 
-        for (var position_in_text = 0; position_in_text < text.length; position_in_text++) {
+        for (let position_in_text = 0; position_in_text < text.length; position_in_text++) {
             // move pattern until text and pattern match
             while (position_in_pattern >= 0 && text[position_in_text].toLowerCase() !== pattern[position_in_pattern].toLowerCase()) {
                 // use prefix-table
@@ -243,11 +245,11 @@ window.onload = function execute(){
     }
 
     function tipue_KMP(searchTerms, page) {
-        var score = 0;
-        for (var f = 0; f < searchTerms.length; f++) {
-            var searchWord = searchTerms[f].toLowerCase();
-            var pre_tab = KMP_prefix(searchWord, searchWord.length);
-            var match_cnt = KMP_search(searchWord, pre_tab, page.title);
+        let score = 0;
+        for (let f = 0; f < searchTerms.length; f++) {
+            let searchWord = searchTerms[f].toLowerCase();
+            let pre_tab = KMP_prefix(searchWord, searchWord.length);
+            let match_cnt = KMP_search(searchWord, pre_tab, page.title);
             if (match_cnt != 0) {
                 score += (20 * match_cnt);
             }
@@ -267,7 +269,7 @@ window.onload = function execute(){
                 score += 20;
             }
             if (score != 0) {
-                for (var e = 0; e < tipuesearchWeight.weight.length; e++) {
+                for (let e = 0; e < tipuesearchWeight.weight.length; e++) {
                     if (page.url == tipuesearchWeight.weight[e].url) {
                         score += tipuesearchWeight.weight[e].score;
                     }
@@ -284,4 +286,3 @@ window.onload = function execute(){
         }
         return score;
     }
-};
