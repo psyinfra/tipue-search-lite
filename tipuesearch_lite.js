@@ -100,9 +100,7 @@ window.onload = function execute(){
                 if (t_w.length < set.descriptiveWords) {
                     t_d = t;
                 } else {
-                    for (let f = 0; f < set.descriptiveWords; f++) {
-                        t_d += t_w[f] + " ";
-                    }
+                    t_d += t_w.slice(0, set.descriptiveWords).join(" ");
                 }
                 t_d = t_d.trim();
                 if (t_d.charAt(t_d.length - 1) != ".") {
