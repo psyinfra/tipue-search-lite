@@ -71,12 +71,12 @@ window.onload = function execute(){
                 resultsHTML += "<div class='tipue_search_content_url'><a href='" + r.url + "'>" + r.url + "</a></div>";
             }
             // add and modify output (for example display search words in bold)
-            if (r.description) {
-                let pageText = r.description;
+            if (r.text) {
+                let pageText = r.text;
                 if (set.showContext) {
                     let posSearchTerm = -1
                     for (const term of searchTerms) {
-                        posSearchTerm = r.description.toLowerCase().indexOf(term);
+                        posSearchTerm = r.text.toLowerCase().indexOf(term);
                         if (posSearchTerm != -1) {
                             break;
                         }
@@ -143,19 +143,11 @@ window.onload = function execute(){
 
     function getSearchResults(searchTerms, tipueIndex) {
         let results = [];
-
         for (const page of tipueIndex.pages) {
-            let score = 0;
-            score = tipue_KMP(searchTerms, page);
-
+            let score = tipue_KMP(searchTerms, page);
             if (score != 0) {
-                results.push({
-                    "score": score,
-                    "title": page.title,
-                    "description": page.text,
-                    "url": page.url,
-                    "note": page.note
-                });
+                page.score = score;
+                results.push(page);
             }
         }
 
