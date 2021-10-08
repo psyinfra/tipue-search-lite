@@ -74,7 +74,13 @@ window.onload = function execute(){
             if (r.description) {
                 let pageText = r.description;
                 if (set.showContext) {
-                    let posSearchTerm = r.description.toLowerCase().indexOf([... searchTerms][0]);
+                    let posSearchTerm = -1
+                    for (const term of searchTerms) {
+                        posSearchTerm = r.description.toLowerCase().indexOf(term);
+                        if (posSearchTerm != -1) {
+                            break;
+                        }
+                    }
                     if (posSearchTerm > set.contextStart) {
                         let partialPageText = pageText.substr(posSearchTerm - set.contextBuffer);
                         partialPageText = pageText.substr(posSearchTerm - set.contextBuffer + partialPageText.indexOf(" "));
