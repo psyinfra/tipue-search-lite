@@ -18,10 +18,8 @@ window.onload = function execute(){
         "contextLength": 60,
         "contextStart": 90,
         "descriptiveWords": 25,
-        "highlightTerms": true,
         "showContext": true,
         "showTime": true,
-        "showTitleCount": true,
         "showURL": false
     };
 
@@ -63,10 +61,8 @@ window.onload = function execute(){
         let commonTermHits = commonTerms.filter(item => searchTerms.includes(item));
         searchTerms = searchTerms.filter(item => !commonTermHits.includes(item));
         results = getSearchResults(searchTerms, tipuesearch);
+        document.title = "(" + results.length + ") " + originalTitle;
 
-        if (set.showTitleCount) {
-            document.title = "(" + results.length + ") " + originalTitle;
-        }
         // build HTML for each result
         for (const r of results) {
             resultsHTML += "<div class='tipue_search_result'>";
@@ -75,42 +71,43 @@ window.onload = function execute(){
                 resultsHTML += "<div class='tipue_search_content_url'><a href='" + r.url + "'>" + r.url + "</a></div>";
             }
             // add and modify output (for example display search words in bold)
-            if (r.desc) {
-                let t = r.desc;
+            if (r.text) {
+                let pageText = r.text;
                 if (set.showContext) {
-                    let s_1 = r.desc.toLowerCase().indexOf(searchTerms[0]);
-                    if (s_1 > set.contextStart) {
-                        let t_1 = t.substr(s_1 - set.contextBuffer);
-                        let s_2 = t_1.indexOf(" ");
-                        t_1 = t.substr(s_1 - set.contextBuffer + s_2);
-                        t_1 = t_1.trim();
-                        if (t_1.length > set.contextLength) {
-                            t = "... " + t_1;
+                    let posSearchTerm = -1
+                    for (const term of searchTerms) {
+                        posSearchTerm = r.text.toLowerCase().indexOf(term);
+                        if (posSearchTerm != -1) {
+                            break;
+                        }
+                    }
+                    if (posSearchTerm > set.contextStart) {
+                        let partialPageText = pageText.substr(posSearchTerm - set.contextBuffer);
+                        partialPageText = pageText.substr(posSearchTerm - set.contextBuffer + partialPageText.indexOf(" "));
+                        partialPageText = partialPageText.trim();
+                        if (partialPageText.length > set.contextLength) {
+                            pageText = "... " + partialPageText;
                         }
                     }
                 }
-                for (let f = 0; f < searchTerms.length; f++) {
-                    if (set.highlightTerms) {
-                        let patr = new RegExp("(" + searchTerms[f] + ")", "gi");
-                        t = t.replace(patr, "<h0011>$1<h0012>");
-                    }
+                for (const term of searchTerms) {
+                    let patr = new RegExp("(" + term + ")", "gi");
+                    pageText = pageText.replace(patr, "<h0011>$1<h0012>");
                 }
-                let t_d = "";
-                let t_w = t.split(" ");
-                if (t_w.length < set.descriptiveWords) {
-                    t_d = t;
+                partialPageText = "";
+                let listOfPageText = pageText.split(" ");
+                if (listOfPageText.length < set.descriptiveWords) {
+                    partialPageText = pageText;
                 } else {
-                    for (let f = 0; f < set.descriptiveWords; f++) {
-                        t_d += t_w[f] + " ";
-                    }
+                    partialPageText += listOfPageText.slice(0, set.descriptiveWords).join(" ");
                 }
-                t_d = t_d.trim();
-                if (t_d.charAt(t_d.length - 1) != ".") {
-                    t_d += " ...";
+                partialPageText = partialPageText.trim();
+                if (partialPageText.charAt(partialPageText.length - 1) != ".") {
+                    partialPageText += " ...";
                 }
-                t_d = t_d.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
-                t_d = t_d.replace(/h0012/g, "/span");
-                resultsHTML += "<div class='tipue_search_content_text'>" + t_d + "</div>";
+                partialPageText = partialPageText.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
+                partialPageText = partialPageText.replace(/h0012/g, "/span");
+                resultsHTML += "<div class='tipue_search_content_text'>" + partialPageText + "</div>";
             }
             if (r.note) {
                 resultsHTML += "<div class='tipue_search_note'>" + r.note + "</div>";
@@ -142,24 +139,15 @@ window.onload = function execute(){
             resultsInfo += "<div id='tipue_ignored_words'>Common words \"" + commonTermHits.join(", ") + "\" got ignored.</div>";
         }
         return resultsInfo;
-   }
-}
+    }
 
     function getSearchResults(searchTerms, tipueIndex) {
         let results = [];
-
         for (const page of tipueIndex.pages) {
-            let score = 0;
-            score = tipue_KMP(searchTerms, page);
-
+            let score = tipue_KMP(searchTerms, page);
             if (score != 0) {
-                results.push({
-                    "score": score,
-                    "title": page.title,
-                    "desc": page.text,
-                    "url": page.url,
-                    "note": page.note
-                });
+                page.score = score;
+                results.push(page);
             }
         }
 
@@ -286,3 +274,4 @@ window.onload = function execute(){
         }
         return score;
     }
+}
