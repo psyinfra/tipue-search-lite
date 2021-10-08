@@ -139,8 +139,7 @@ window.onload = function execute(){
             resultsInfo += "<div id='tipue_ignored_words'>Common words \"" + commonTermHits.join(", ") + "\" got ignored.</div>";
         }
         return resultsInfo;
-   }
-}
+    }
 
     function getSearchResults(searchTerms, tipueIndex) {
         let results = [];
@@ -283,3 +282,4 @@ window.onload = function execute(){
         }
         return score;
     }
+}
