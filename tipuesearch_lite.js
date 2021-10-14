@@ -238,6 +238,15 @@ window.onload = function execute(){
             term = term.toLowerCase();
             let pre_tab = KMP_prefix(term, term.length);
 
+            if (term.charAt(0) == '-') {
+                let negateTerm = term.substring(1);
+                if (KMP_search(negateTerm, pre_tab, page.title) ||
+                    KMP_search(negateTerm, pre_tab, page.text)  ||
+                    KMP_search(negateTerm, pre_tab, page.tags)) {
+                        return 0;
+                }
+            }
+
             // score title
             score += (20 * KMP_search(term, pre_tab, page.title));
             // score text
@@ -253,15 +262,6 @@ window.onload = function execute(){
             // apply weights
             if (page.url in tipuesearchWeights) {
                 score = (score * tipuesearchWeights[page.url].score);
-            }
-
-            if (term.match("^-")) {
-                pat=new RegExp(term.substring(1),"i");
-                if (KMP_search(term, pre_tab, page.title) != 0 ||
-                    KMP_search(term, pre_tab, page.text) != 0 ||
-                    KMP_search(term, pre_tab, page.tags)!=0) {
-                        score=0;
-                }
             }
         }
         return score;
