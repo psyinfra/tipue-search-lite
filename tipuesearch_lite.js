@@ -237,28 +237,24 @@ window.onload = function execute(){
         for (let term of searchTerms) {
             term = term.toLowerCase();
             let pre_tab = KMP_prefix(term, term.length);
-            let match_cnt = KMP_search(term, pre_tab, page.title);
-            if (match_cnt != 0) {
-                score += (20 * match_cnt);
-            }
-            match_cnt = KMP_search(term, pre_tab, page.text);
-            if (match_cnt != 0) {
-                score += (20 * match_cnt);
-            }
 
+            // score title
+            score += (20 * KMP_search(term, pre_tab, page.title));
+            // score text
+            score += (20 * KMP_search(term, pre_tab, page.text));
+            // score tags
             if (page.tags) {
-                match_cnt = KMP_search(term, pre_tab, page.tags);
-                if (match_cnt != 0) {
-                    score += (10 * match_cnt);
-                }
+                score += (10 * KMP_search(term, pre_tab, page.tags));
             }
-            match_cnt = KMP_search(term, pre_tab, page.url);
-            if (match_cnt != 0) {
+            // score URL
+            if (KMP_search(term, pre_tab, page.url)) {
                 score += 20;
             }
+            // apply weights
             if (page.url in tipuesearchWeights) {
                 score = (score * tipuesearchWeights[page.url].score);
             }
+
             if (term.match("^-")) {
                 pat=new RegExp(term.substring(1),"i");
                 if (KMP_search(term, pre_tab, page.title) != 0 ||
