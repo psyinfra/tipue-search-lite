@@ -234,36 +234,36 @@ window.onload = function execute(){
 
     function tipue_KMP(searchTerms, page) {
         let score = 0;
-        for (let f = 0; f < searchTerms.length; f++) {
-            let searchWord = searchTerms[f].toLowerCase();
-            let pre_tab = KMP_prefix(searchWord, searchWord.length);
-            let match_cnt = KMP_search(searchWord, pre_tab, page.title);
+        for (let term of searchTerms) {
+            term = term.toLowerCase();
+            let pre_tab = KMP_prefix(term, term.length);
+            let match_cnt = KMP_search(term, pre_tab, page.title);
             if (match_cnt != 0) {
                 score += (20 * match_cnt);
             }
-            match_cnt = KMP_search(searchWord, pre_tab, page.text);
+            match_cnt = KMP_search(term, pre_tab, page.text);
             if (match_cnt != 0) {
                 score += (20 * match_cnt);
             }
 
             if (page.tags) {
-                match_cnt = KMP_search(searchWord, pre_tab, page.tags);
+                match_cnt = KMP_search(term, pre_tab, page.tags);
                 if (match_cnt != 0) {
                     score += (10 * match_cnt);
                 }
             }
-            match_cnt = KMP_search(searchWord, pre_tab, page.url);
+            match_cnt = KMP_search(term, pre_tab, page.url);
             if (match_cnt != 0) {
                 score += 20;
             }
             if (page.url in tipuesearchWeights) {
                 score = (score * tipuesearchWeights[page.url].score);
             }
-            if (searchWord.match("^-")) {
-                pat=new RegExp(searchWord.substring(1),"i");
-                if (KMP_search(searchWord, pre_tab, page.title) != 0 ||
-                    KMP_search(searchWord, pre_tab, page.text) != 0 ||
-                    KMP_search(searchWord, pre_tab, page.tags)!=0) {
+            if (term.match("^-")) {
+                pat=new RegExp(term.substring(1),"i");
+                if (KMP_search(term, pre_tab, page.title) != 0 ||
+                    KMP_search(term, pre_tab, page.text) != 0 ||
+                    KMP_search(term, pre_tab, page.tags)!=0) {
                         score=0;
                 }
             }
