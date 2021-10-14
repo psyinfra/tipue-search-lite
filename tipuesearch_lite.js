@@ -179,6 +179,7 @@ window.onload = function execute(){
         }
 
         searchTerms = searchTerms.filter(item => (item));
+        searchTerms = searchTerms.map(searchTerm => searchTerm.toLowerCase());
         // remove duplicates
         searchTerms = [...new Set(searchTerms)];
         return searchTerms;
