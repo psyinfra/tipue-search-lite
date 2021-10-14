@@ -32,7 +32,7 @@ window.onload = function execute(){
         getTipueSearch();
     }
 
-    // call search via search-box
+    // search via search-box
     document.getElementById('tipue_search_input').form.onsubmit = function() {
         getTipueSearch();
 
@@ -40,11 +40,11 @@ window.onload = function execute(){
         let historyTitle = '';
 
         let query = document.getElementById("tipue_search_input").value;
-        if (!query || query.length === 0) {
-            historyUrl = location.href.split('?')[0];
-        } else {
+        if (query) {
             historyUrl = historyUrl + '?q=' + query;
             historyTitle = 'Search - ' + query;
+        } else {
+            historyUrl = location.href.split('?')[0];
         }
 
         // add to address bar and history
