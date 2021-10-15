@@ -90,10 +90,6 @@ window.onload = function execute(){
                         }
                     }
                 }
-                for (const term of searchTerms) {
-                    let patr = new RegExp("(" + term + ")", "gi");
-                    pageText = pageText.replace(patr, "<h0011>$1<h0012>");
-                }
                 partialPageText = "";
                 let listOfPageText = pageText.split(" ");
                 if (listOfPageText.length < set.descriptiveWords) {
@@ -105,8 +101,8 @@ window.onload = function execute(){
                 if (partialPageText.charAt(partialPageText.length - 1) != ".") {
                     partialPageText += " ...";
                 }
-                partialPageText = partialPageText.replace(/h0011/g, "span class=\"tipue_search_content_bold\"");
-                partialPageText = partialPageText.replace(/h0012/g, "/span");
+                partialPageText = highlightSearchTerms(partialPageText, searchTerms);
+
                 resultsHTML += "<div class='tipue_search_content_text'>" + partialPageText + "</div>";
             }
             if (r.note) {
@@ -114,7 +110,6 @@ window.onload = function execute(){
             }
             resultsHTML += "</div>";
         }
-
         // add information to beginning of the output
         resultsHTML = buildResultsInfo(results, startTimer, commonTermHits) + resultsHTML;
         // give the page the actual contents, which were build up
@@ -184,6 +179,15 @@ window.onload = function execute(){
         searchTerms = [...new Set(searchTerms)];
         return searchTerms;
     }
+
+    function highlightSearchTerms(partialPageText, searchTerms) {
+        for (const term of searchTerms) {
+            let patr = new RegExp("(" + term + ")", "gi");
+            partialPageText = partialPageText.replace(patr, "<span class=\"tipue_search_content_bold\">$1</span>");
+        }
+        return partialPageText;
+    }
+
 
     // -------------------- SEARCH ALGORITHM ------------------------
     function KMP_prefix(pattern, pattern_len) {
