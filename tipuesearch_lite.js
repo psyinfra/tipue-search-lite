@@ -70,40 +70,11 @@ window.onload = function execute(){
             if (set.showURL) {
                 resultsHTML += "<div class='tipue_search_content_url'><a href='" + r.url + "'>" + r.url + "</a></div>";
             }
-            // add and modify output (for example display search words in bold)
-            if (r.text) {
-                let pageText = r.text;
-                if (set.showContext) {
-                    let posSearchTerm = -1
-                    for (const term of searchTerms) {
-                        posSearchTerm = r.text.toLowerCase().indexOf(term);
-                        if (posSearchTerm != -1) {
-                            break;
-                        }
-                    }
-                    if (posSearchTerm > set.contextStart) {
-                        let partialPageText = pageText.substr(posSearchTerm - set.contextBuffer);
-                        partialPageText = pageText.substr(posSearchTerm - set.contextBuffer + partialPageText.indexOf(" "));
-                        partialPageText = partialPageText.trim();
-                        if (partialPageText.length > set.contextLength) {
-                            pageText = "... " + partialPageText;
-                        }
-                    }
-                }
-                partialPageText = "";
-                let listOfPageText = pageText.split(" ");
-                if (listOfPageText.length < set.descriptiveWords) {
-                    partialPageText = pageText;
-                } else {
-                    partialPageText += listOfPageText.slice(0, set.descriptiveWords).join(" ");
-                }
-                partialPageText = partialPageText.trim();
-                if (partialPageText.charAt(partialPageText.length - 1) != ".") {
-                    partialPageText += " ...";
-                }
-                partialPageText = highlightSearchTerms(partialPageText, searchTerms);
-
-                resultsHTML += "<div class='tipue_search_content_text'>" + partialPageText + "</div>";
+            // modify results and add to html output
+            if (r.text && set.showContext) {
+                let pageText = selectPageText(r.text, searchTerms);
+                pageText = highlightSearchTerms(pageText, searchTerms);
+                resultsHTML += "<div class='tipue_search_content_text'>" + pageText + "</div>";
             }
             if (r.note) {
                 resultsHTML += "<div class='tipue_search_note'>" + r.note + "</div>";
@@ -179,6 +150,38 @@ window.onload = function execute(){
         searchTerms = [...new Set(searchTerms)];
         return searchTerms;
     }
+
+    function selectPageText(pageText, searchTerms) {
+        let tempPageText = pageText.toLowerCase();
+        let posSearchTerm = -1;
+        for (const term of searchTerms) {
+            posSearchTerm = tempPageText.indexOf(term);
+            if (posSearchTerm != -1) {
+                break;
+            }
+        }
+        if (posSearchTerm > set.contextStart) {
+            let partialPageText = pageText.substr(posSearchTerm - set.contextBuffer);
+            partialPageText = pageText.substr(posSearchTerm - set.contextBuffer + partialPageText.indexOf(" "));
+            partialPageText = partialPageText.trim();
+            if (partialPageText.length > set.contextLength) {
+                pageText = "... " + partialPageText;
+            }
+        }
+        partialPageText = "";
+        let listOfPageText = pageText.split(" ");
+        if (listOfPageText.length < set.descriptiveWords) {
+            partialPageText = pageText;
+        } else {
+            partialPageText += listOfPageText.slice(0, set.descriptiveWords).join(" ");
+        }
+        partialPageText = partialPageText.trim();
+        if (partialPageText.charAt(partialPageText.length - 1) != ".") {
+            partialPageText += " ...";
+        }
+        return partialPageText;
+    }
+
 
     function highlightSearchTerms(partialPageText, searchTerms) {
         for (const term of searchTerms) {
