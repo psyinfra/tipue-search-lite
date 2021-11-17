@@ -12,7 +12,7 @@ window.onload = function execute(){
         "showURL": false
     };
 
-    var originalTitle = document.title;
+    var originalDocumentTitle = document.title;
     let params = new URLSearchParams(document.location.search.substring(1));
 
     // call search (if opened as a link)
@@ -24,10 +24,8 @@ window.onload = function execute(){
     // search via search-box
     document.getElementById('tipue_search_input').form.onsubmit = function() {
         getTipueSearch();
-
         let historyUrl = '';
         let historyTitle = '';
-
         let query = document.getElementById("tipue_search_input").value;
         if (query) {
             historyUrl = historyUrl + '?q=' + query;
@@ -35,7 +33,6 @@ window.onload = function execute(){
         } else {
             historyUrl = location.href.split('?')[0];
         }
-
         // add to address bar and history
         history.pushState({}, historyTitle, historyUrl);
         return false;
@@ -45,12 +42,11 @@ window.onload = function execute(){
         const startTimer = new Date().getTime();
         let results = [];
         let resultsHTML = "";
-
         let searchTerms = parseQuery(document.getElementById("tipue_search_input").value);
         let commonTermHits = commonTerms.filter(item => searchTerms.includes(item));
         searchTerms = searchTerms.filter(item => !commonTermHits.includes(item));
         results = getSearchResults(searchTerms, tipuesearch);
-        document.title = "(" + results.length + ") " + originalTitle;
+        document.title = "(" + results.length + ") " + originalDocumentTitle;
 
         // build HTML for each result
         for (const r of results) {
@@ -61,7 +57,7 @@ window.onload = function execute(){
             }
             // modify results and add to html output
             if (r.text && set.showContext) {
-                let pageText = selectPageText(r.text, searchTerms);
+                let pageText = selectPageContext(r.text, searchTerms);
                 pageText = highlightSearchTerms(pageText, searchTerms);
                 resultsHTML += "<div class='tipue_search_content_text'>" + pageText + "</div>";
             }
@@ -99,7 +95,7 @@ window.onload = function execute(){
     function getSearchResults(searchTerms, tipueIndex) {
         let results = [];
         for (const page of tipueIndex.pages) {
-            let score = rateText(searchTerms, page.title) + rateText(searchTerms, page.text);
+            let score = scoreText(searchTerms, page.title) + scoreText(searchTerms, page.text);
             if (score != 0) {
                 page.score = score;
                 results.push(page);
@@ -111,7 +107,6 @@ window.onload = function execute(){
 
     function parseQuery(query) {
         let searchTerms = [];
-
         while (query.length > 0) {
             query = query.trim();
             if (query.charAt(0) == '"' && query.includes('"', 1)) {
@@ -131,7 +126,6 @@ window.onload = function execute(){
                 query = '';
             }
         }
-
         searchTerms = searchTerms.filter(item => (item));
         searchTerms = searchTerms.map(searchTerm => searchTerm.toLowerCase());
         // remove duplicates
@@ -139,33 +133,34 @@ window.onload = function execute(){
         return searchTerms;
     }
 
-    function selectPageText(pageText, searchTerms) {
+    function selectPageContext(pageText, searchTerms) {
         let tempText = pageText;
-        let bestText = "";
-        let score = 0;
-        // -1 to select always beginning of text by default
-        let bestScore = - 1;
+        let bestText = tempText.slice(0, set.contextLength);
+        let bestScore = 0;
         while (tempText.length > 0) {
-            score = rateText(searchTerms, tempText.slice(0, set.contextLength));
+            let currentText = tempText.slice(0, set.contextLength);
+            currentText = currentText.slice(0, currentText.lastIndexOf(" "));
+            let score = scoreText(searchTerms, currentText);
             if (score > bestScore) {
                 bestScore = score;
-                bestText = tempText.slice(0, set.contextLength);
+                bestText = currentText;
             }
             // check, otherwise endless loop
-            if (tempText.indexOf(" ") > - 1) {
+            if (tempText.indexOf(" ") > -1) {
                 tempText = tempText.slice(tempText.indexOf(" ") + 1);
             } else {
                 tempText = "";
             }
         }
-        if (pageText.length > set.contextLength && pageText.slice(0, set.contextLength) == bestText) {
-            bestText = bestText.slice(0, bestText.lastIndexOf(" ")) + " ...";
-        } else if (pageText.length > set.contextLength) {
-            bestText = "... " + bestText.slice(0, bestText.lastIndexOf(" ")) + " ...";
+        if (pageText.length > set.contextLength) {
+            if (pageText.slice(0, bestText.length) == bestText) {
+                return bestText + " ...";
+            } else {
+                return "... " + bestText + " ...";
+            }
         }
         return bestText;
     }
-
 
     function highlightSearchTerms(partialPageText, searchTerms) {
         for (const term of searchTerms) {
@@ -175,12 +170,12 @@ window.onload = function execute(){
         return partialPageText;
     }
 
-    function rateText(searchTerms, text) {
+    function scoreText(searchTerms, text) {
         let score = 0;
-        for(const term of searchTerms){
-            score += (text.toLowerCase().split(term).length-1)*term.length;
+        for (const term of searchTerms) {
+            let numMatches = text.toLowerCase().split(term).length - 1;
+            score += numMatches * term.length;
         }
         return score;
     }
-
 }
