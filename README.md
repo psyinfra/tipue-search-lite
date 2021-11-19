@@ -18,6 +18,7 @@ Differences from Tipue Search 7.1
 * Removed "word replacement"
 * Removed "stemming replacement"
 * Removed pagination of results
+* Removed "tipuesearchWeights"
 * Linting and code simplification
 
 
