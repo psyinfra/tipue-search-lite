@@ -12,7 +12,6 @@ Tipue Search Lite is most commonly used as a search engine for static websites.
 Differences from Tipue Search 7.1
 
 * Removed dependency on jQuery
-* Search algorithm uses the [KMP Algorithm](https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm)
 * Removed image support
 * Removed "related searches"
 * Removed "word replacement"
@@ -20,6 +19,17 @@ Differences from Tipue Search 7.1
 * Removed pagination of results
 * Removed "tipuesearchWeights"
 * Linting and code simplification
+
+
+## Settings
+
+To modify the output, change the corresponding value of the set-variable in
+tipuesearch_lite.js:
+
+* **showContext**: show part of text from page with results
+* **contextLength**: number of characters for context
+* **showTime**: show search time on top of results
+* **showURL**: show URL of pages
 
 
 ## Search Index
