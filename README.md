@@ -13,18 +13,18 @@ Differences from Tipue Search 7.1
 
 * Removed dependency on jQuery
 * Removed image support
-* Removed "related searches"
-* Removed "word replacement"
-* Removed "stemming replacement"
+* Removed hard-coded related searches
+* Removed word replacement
+* Removed stemming replacement
 * Removed pagination of results
-* Removed "tipuesearchWeights"
-* Linting and code simplification
+* Removed hard-coded page-weighting
+* Significant code refactoring, modernization, and bug fixing
 
 
 ## Settings
 
-To modify the output, change the corresponding value of the set-variable in
-tipuesearch_lite.js:
+To modify the output, change the corresponding value of the `set` variable in
+`tipuesearch_lite.js`:
 
 * **showContext**: show part of text from page with results
 * **contextLength**: number of characters for context
