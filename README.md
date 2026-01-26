@@ -1,3 +1,9 @@
+# Migrated to Codeberg
+
+This project is no longer developed on GitHub and has been migrated to Codeberg:
+
+https://codeberg.org/psyinfra/tipue-search-lite
+
 # Tipue Search Lite
 
 Tipue Search Lite is a vanilla JavaScript fork of the popular [Tipue Search](https://github.com/michael-milette/Tipue-Search)
